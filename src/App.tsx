@@ -1,26 +1,35 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import createSector from './generators/createSector';
+import RootView from './views/RootView';
+
+import logo from './views/swncover.png';
+import MainControls from './components/MainControls';
+
+const Recoil = require('recoil');
+
+
+
 
 function App() {
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      
+      <Recoil.RecoilRoot>
+        <RootView />
+        <MainControls />
+      </Recoil.RecoilRoot>
+
+
+      <img src={logo} className="logo" />
+
     </div>
   );
 }
+
+
+
 
 export default App;

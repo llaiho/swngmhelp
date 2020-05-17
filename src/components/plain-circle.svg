@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="height:512px;width:512px">
+    <defs>
+        <radialGradient id="gradient-1">
+            <stop offset="0%" stop-color="#b38844" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#463e37" stop-opacity="1"/>
+        </radialGradient>
+    </defs>
+    <polygon points="475.1,382.5,256,509,36.9,382.5,36.9,129.5,256,3,475.1,129.5" fill="#000000" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="3" fill-opacity="0.3" />
+    <!-- <g class="" transform="translate(0,0)" style="touch-action:none">
+        <path d="M256 23.05C127.5 23.05 23.05 127.5 23.05 256S127.5 488.9 256 488.9 488.9 384.5 488.9 256 384.5 23.05 256 23.05z" fill="url(#gradient-1)" transform="translate(128, 128) scale(0.5, 0.5) rotate(-360, 256, 256)"/>
+    </g> -->
+</svg>
