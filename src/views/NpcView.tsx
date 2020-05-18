@@ -1,9 +1,10 @@
 import React, { FC, useState, useEffect } from "react";
+import faker from "faker";
 
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 
 import { useRecoilState, useSetRecoilState } from "../utils/Recoil";
-import { Container, Card, Button, Select, MenuItem } from "@material-ui/core";
+import { Container, Card, Button, Select, MenuItem, IconButton } from "@material-ui/core";
 import atomNpcSelection from "../atoms/atomNpcSelection";
 import { NonPlayerCharacter, Attributes, Skill, NpcMotivation } from "../interfaces/Npc";
 
@@ -12,6 +13,8 @@ import DoneOutlineIcon from "@material-ui/icons/DoneOutline";
 import CancelIcon from "@material-ui/icons/Cancel";
 import ExposurePlus1Icon from "@material-ui/icons/ExposurePlus1";
 import ExposureNeg1Icon from "@material-ui/icons/ExposureNeg1";
+import RefreshIcon from "@material-ui/icons/Refresh";
+
 import AttributeContainer from "../components/AttributeContainer";
 import useKeyValueListStyle from "../styles/useKeyValueListStyle";
 
@@ -20,6 +23,8 @@ import SKILLS from "../data/Skills";
 import { MANNERS, MOTIVATION, WANT, POWER, HOOK, OUTCOME } from "../generators/npcGenerators";
 import TextInput from "../components/TextInput";
 import npcAtoms from "../atoms/npcAtoms";
+import { arnd } from "../utils/randUtils";
+import { stringify } from "querystring";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -44,8 +49,8 @@ const useStyles = makeStyles((theme: Theme) =>
                     cursor: "pointer",
                     borderBottom: "solid 1px",
 
-                    borderColor: theme.palette.primary.light
-                }
+                    borderColor: theme.palette.primary.light,
+                },
             },
             "& .MuiInputBase-input": {
                 fontSize: "2rem",
@@ -200,7 +205,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         padder: {
             padding: "1rem 0.25rem",
-        }
+        },
     })
 );
 
@@ -208,8 +213,8 @@ const NpcView: FC = () => {
     const [npc, setNpcSelected] = useRecoilState<NonPlayerCharacter | null>(atomNpcSelection);
     const [edited, setEdited] = useState(false);
     const [oldNpc, setOldNpc] = useState<NonPlayerCharacter | null>(null);
-    
-    const setNpcs = useSetRecoilState(npcAtoms);
+
+    const setNpcs = useSetRecoilState<NonPlayerCharacter[]>(npcAtoms);
 
     const classes = useStyles();
     const listStyle = useKeyValueListStyle();
@@ -226,8 +231,7 @@ const NpcView: FC = () => {
 
     function save() {
         if (npc !== null) {
-
-            setNpcs((oldNpcs: NonPlayerCharacter[])=> {
+            setNpcs((oldNpcs: NonPlayerCharacter[]) => {
                 const newNpcs = [...oldNpcs];
                 const npcIndex = newNpcs.findIndex((n: NonPlayerCharacter) => n && n.id === npc.id);
                 newNpcs.splice(npcIndex, 1, npc);
@@ -262,7 +266,7 @@ const NpcView: FC = () => {
     }
 
     function editSkill(skill: Skill) {
-        console.log("edit skill", skill);
+        
         if (npc && npc.skills) {
             const skills: Skill[] = npc.skills.filter((s: Skill) => s.name !== skill.name);
             skills.push(skill);
@@ -293,13 +297,42 @@ const NpcView: FC = () => {
     }
 
     function editMainStringData(key: string, value: string) {
-        const nnpc: NonPlayerCharacter = { ...npc } as NonPlayerCharacter;
+        // const nnpc: NonPlayerCharacter = { ...npc } as NonPlayerCharacter;
 
-        if (key === "description") nnpc.description = value;
-        if (key === "name") nnpc.name = value;
+        // if (key === "description") nnpc.description = value;
+        // if (key === "name") nnpc.name = value;
 
-        setNpcSelected(nnpc);
+        setNpcSelected((prevState: NonPlayerCharacter | null) => {
+            
+            if (prevState !== null) {
+                const nState: NonPlayerCharacter = {...prevState};
+            
+                if (key === "name") {                
+                    nState.name = value;
+                }
+                if (key === "description") {
+                    nState.description = value;
+                }
+                
+                return nState;    
+            }
+            return null;
+            
+        });
         setEdited(true);
+    }
+
+    function getNewRandomName() {
+        faker.locale = arnd(["en", "fr", "ru", "pl", "nl", "tr", "es", "de", "ge"]);
+        let newName = "";
+
+        if (npc !== null && npc.gender === "Male") {
+            newName = `${faker.name.firstName(0)} ${faker.name.lastName(0)}`;
+        } else {
+            newName = `${faker.name.firstName(1)} ${faker.name.lastName(1)}`;
+        }
+        
+        editMainStringData("name", newName);
     }
 
     if (npc === null) {
@@ -312,13 +345,16 @@ const NpcView: FC = () => {
                 <Button onClick={back} variant="contained" startIcon={<ArrowBackIcon />}>
                     Back
                 </Button>
-                <TextInput 
+                <TextInput
                     value={npc.name}
                     onDataSave={editMainStringData}
                     dataKey="name"
                     clickToEdit={true}
                     variant="outlined"
                 />
+                <IconButton onClick={getNewRandomName}>
+                    <RefreshIcon />
+                </IconButton>
                 <div className="editButtons">
                     <Button
                         onClick={cancel}
@@ -491,7 +527,7 @@ const NpcView: FC = () => {
                         rows={3}
                         variant="outlined"
                         multiline={true}
-                        classes={{root: classes.select}}
+                        classes={{ root: classes.select }}
                     />
                 </div>
             </Card>

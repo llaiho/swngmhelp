@@ -17,6 +17,13 @@ const TextInput: FC<TextInputProps> = (props: TextInputProps) => {
 
     const [start, stop] = useDelay();
 
+
+    useEffect(() => {
+        if(!editMode) {
+            setVal(value);
+        }
+    }, [props.value, editMode])
+
     function onKeyDownEvent(e: any) {
         if (e.key === "Enter") {
             saveEdit();

@@ -23,13 +23,13 @@ const AttributeContainer: FC<AttributeContainerProps> = (props: AttributeContain
     const editMode = props.onEdit !== undefined;
 
     function plusOne() {
-        if(editMode && props.onEdit) {
+        if (editMode && props.onEdit) {
             props.onEdit(props.name, props.value + 1);
         }
     }
 
     function minusOne() {
-        if(editMode && props.onEdit) {
+        if (editMode && props.onEdit) {
             props.onEdit(props.name, props.value - 1);
         }
     }
@@ -39,8 +39,20 @@ const AttributeContainer: FC<AttributeContainerProps> = (props: AttributeContain
             {props.name}: <b>{props.value}</b>
             {editMode && (
                 <span className="edit-buttons">
-                    <Button startIcon={<ExposurePlus1Icon />} variant="contained" color="primary" onClick={plusOne}></Button>    
-                    <Button startIcon={<ExposureNeg1Icon />} variant="contained" color="primary" onClick={minusOne}></Button>    
+                    <Button
+                        startIcon={<ExposurePlus1Icon />}
+                        variant="contained"
+                        color="primary"
+                        onClick={plusOne}
+                        className="just-icon-button"
+                    />
+                    <Button
+                        startIcon={<ExposureNeg1Icon />}
+                        variant="contained"
+                        color="primary"
+                        onClick={minusOne}
+                        className="just-icon-button"
+                    />
                 </span>
             )}
             <small className={bonusClass}>{bonusStr}</small>

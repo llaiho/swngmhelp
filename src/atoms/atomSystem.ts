@@ -5,7 +5,5 @@ const systemAtom = atom({
     default: null
 });
 
-console.log("SystemAtom", systemAtom);
-
 
 export default systemAtom;

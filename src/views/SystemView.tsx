@@ -80,8 +80,6 @@ const SystemView: FC = () => {
         return null;
     }
 
-    console.log("SYSTEM", system);
-
     return (
         <Container className="data-view">
 
