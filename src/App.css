@@ -1,5 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500;600;700&display=swap');
+
 body {
   font-size: 16px;
+  width: 100%;
+  min-height: 100vh;
 }
 * {
   margin: 0;
@@ -13,6 +17,10 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   min-height: 100vh;
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
 }
 
 

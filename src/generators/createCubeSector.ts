@@ -18,13 +18,11 @@ const createCubeSector = (options: SectorCubeOptions): CubeSector => {
         stars: [],
         hexes: [],
         rings: options.rings || 4,
-        density: options.density || "normal"
+        density: options.density || "normal",
+        npcs: []
     };
 
-    // Create hexes with x,y,z 
-    // sector.hexes.push(createHex(0, 0, 0));
-
-
+    
     // Create hexes with axial coordinates
     for (let r = sector.rings; r >= sector.rings * -1; r--) {
         for (let q = sector.rings; q >= sector.rings * -1; q--) {
@@ -36,15 +34,7 @@ const createCubeSector = (options: SectorCubeOptions): CubeSector => {
     }
 
     const hexCount = sector.hexes.length;
-
     
-
-    const targetStarSystemCount = Math.round(hexCount / (options.density === "low" ? 3 : options.density === "dense" ? 2 : 2.5));
-    const systemCountVariation = Math.round(targetStarSystemCount / 3);
-    
-    // const minCount = Math.round(targetStarSystemCount - systemCountVariation);
-    // const maxCount = targetStarSystemCount + systemCountVariation;
-
     let minCount = Math.round(hexCount*0.25);
     let maxCount = Math.round(hexCount*0.4);
 
@@ -60,8 +50,7 @@ const createCubeSector = (options: SectorCubeOptions): CubeSector => {
 
 
     const systemCount = rnd(minCount, maxCount);
-    console.log(`Hex Count: ${hexCount}\nStars: ${minCount} - ${maxCount} => ${systemCount}\nTargetCount: ${targetStarSystemCount}`);
-
+    
     const targetHexes = arnds(sector.hexes, systemCount, true);
 
     targetHexes.forEach(hex => {

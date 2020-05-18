@@ -3,7 +3,6 @@ import { CubeSector, StarSystem, PrimaryPlanet, Sector, Hex, StarSize, Populatio
 
 import systemAtom from '../atoms/atomSystem';
 
-import './sector-map.scss';
 import { useRecoilState, useRecoilValue } from '../utils/Recoil';
 import { Container, Button, IconButton } from '@material-ui/core';
 import sectorAtom from '../atoms/atomSector';
@@ -15,11 +14,15 @@ import ZoomOutIcon from '@material-ui/icons/ZoomOut';
 import useWindowSize from '../utils/useWindowSize';
 import SectorMapControls from './SectorMapControls';
 import sectorZoomLevel from '../atoms/atomZoomLevel';
+import atomMapPosition from '../atoms/atomMapPosition';
+import SectorName from './SectorName';
+
 
 import hexaImg from './plain-circle.svg';
 import selectedHexImg from './selectedHex.svg';
-import atomMapPosition from '../atoms/atomMapPosition';
-import SectorName from './SectorName';
+
+import './sector-map.scss';
+
 
 interface SectorMapProps {
     sector: CubeSector
@@ -41,7 +44,7 @@ const CubeSectorMap: FC<SectorMapProps> = (props: SectorMapProps) => {
 
     const hexSize = zoomLevels[zoomLevel];
     const dx = wSize.width !== undefined ? (wSize.width / 2) - hexSize + mapPosition[0] : 800;
-    const dy = wSize.height !== undefined ? wSize.height / 2 - hexSize + mapPosition[1] : 600;
+    const dy = wSize.height !== undefined ? wSize.height / 2 - hexSize + 48 + mapPosition[1] : 600;
 
     return (
         <>

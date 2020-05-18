@@ -10,7 +10,6 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-
 import BackupIcon from '@material-ui/icons/Backup';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 

@@ -1,7 +1,10 @@
 
 
-div.system-view {
+div.data-view {
     
+    padding-top: 4rem;
+    overflow-y: auto;
+
     & > header {
         display: flex;
         flex-direction: row;

@@ -1,3 +1,4 @@
+import { NonPlayerCharacter } from "./Npc";
 
 
 export interface Sector {
@@ -7,7 +8,6 @@ export interface Sector {
     rows: number;
     columns: number;
     density: string;
-
 }
 
 
@@ -18,6 +18,7 @@ export interface CubeSector {
     hexes: Hex[],
     rings: number;
     density: string;
+    npcs: NonPlayerCharacter[];
 }
 
 export interface StarSystem {

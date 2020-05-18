@@ -13,10 +13,12 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 
-import './controls.scss';
+
 import sectorAtom from '../atoms/atomSector';
 import { Sector } from '../interfaces/Sector';
 import atomMapPosition from '../atoms/atomMapPosition';
+
+import './controls.scss';
 
 const SectorMapControls: FC = () => {
 

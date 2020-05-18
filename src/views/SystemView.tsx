@@ -7,9 +7,9 @@ import { StarSystem, Star, PrimaryPlanet, Tag, Planet, SecondaryPlanet, GeneralP
 
 import { Button, Container, Card, makeStyles, createStyles } from '@material-ui/core';
 
-import './system-view.scss';
 import useKeyValueListStyle from '../styles/useKeyValueListStyle';
 
+import './data-view.scss';
 
 const useStyles = makeStyles(createStyles({
     starCard: {
@@ -72,9 +72,9 @@ const SystemView: FC = () => {
     function deselect() {
         setSystem(null);
     }
-    console.log("system", system);
+    
     return (
-        <Container className="system-view">
+        <Container className="data-view">
 
             <header className={classes.header}>
                 <Button onClick={deselect} variant="contained" >Back</Button>
