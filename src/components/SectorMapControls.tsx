@@ -15,7 +15,7 @@ import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 
 
 import sectorAtom from '../atoms/atomSector';
-import { Sector } from '../interfaces/Sector';
+import { OldSector } from '../interfaces/Sector';
 import atomMapPosition from '../atoms/atomMapPosition';
 
 import './controls.scss';
@@ -23,7 +23,7 @@ import './controls.scss';
 const SectorMapControls: FC = () => {
 
     const [zoomLevel, setZoomLevel] = useRecoilState<number>(sectorZoomLevel);
-    const [sector, setSector] = useRecoilState<Sector>(sectorAtom);
+    const [sector, setSector] = useRecoilState<OldSector>(sectorAtom);
     const [mapPosition, setMapPosition] = useRecoilState<[number, number]>(atomMapPosition);
 
     const zoomLevels: number[] = [10, 25, 50, 75, 100, 150, 200];

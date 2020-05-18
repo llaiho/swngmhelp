@@ -1,18 +1,18 @@
-import { Sector, CubeSector, Hex } from "../interfaces/Sector";
+import { Sector, Hex, StarSystem } from "../interfaces/Sector";
 import { rnd, arnds } from "../utils/randUtils";
 import { v4 as uuidv4, v4 } from 'uuid';
 import createStarSystem from "./createStarSystem";
 import { axialToCube } from "../utils/hexUtils";
 
 
-interface SectorCubeOptions {
+interface createSectorOptions {
     density?: "low" | "normal" | "dense";
     rings?: number;
 }
 
-const createCubeSector = (options: SectorCubeOptions): CubeSector => {
+const createSector = (options: createSectorOptions): [Sector, Hex[], StarSystem[]] => {
 
-    const sector: CubeSector = {
+    const sector: Sector = {
         id: v4(),
         name: "",
         stars: [],
@@ -24,14 +24,17 @@ const createCubeSector = (options: SectorCubeOptions): CubeSector => {
 
     
     // Create hexes with axial coordinates
+    const hexes: Hex[] = [];
     for (let r = sector.rings; r >= sector.rings * -1; r--) {
         for (let q = sector.rings; q >= sector.rings * -1; q--) {
             const cube = axialToCube({ q: q, r: r });
             if (Math.abs(cube.y) <= sector.rings) {
-                sector.hexes.push(createHex(cube.x, cube.y, cube.z));
+                hexes.push(createHex(cube.x, cube.y, cube.z));
             }
         }
     }
+
+    sector.hexes = hexes.map((h: Hex) => h.id);
 
     const hexCount = sector.hexes.length;
     
@@ -51,16 +54,17 @@ const createCubeSector = (options: SectorCubeOptions): CubeSector => {
 
     const systemCount = rnd(minCount, maxCount);
     
-    const targetHexes = arnds(sector.hexes, systemCount, true);
+    const targetHexes = arnds(hexes, systemCount, true);
 
+    const starSystems: StarSystem[] = [];
     targetHexes.forEach(hex => {
         const star = createStarSystem(hex);
-        sector.stars.push(star);
+        starSystems.push(star);
     });
 
+    sector.stars = starSystems.map((s: StarSystem) => s.id);
     
-
-    return sector;
+    return [sector, hexes, starSystems];
 
 };
 
@@ -81,4 +85,4 @@ function createHex(x: number, y: number, z: number): Hex {
 }
 
 
-export default createCubeSector;
+export default createSector;

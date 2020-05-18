@@ -1,15 +1,16 @@
 
 
 import React, { FC } from 'react';
-import { useRecoilState, Atom } from '../utils/Recoil';
+import { useRecoilState, Atom, useSetRecoilState, useRecoilValue } from '../utils/Recoil';
 import systemAtom from '../atoms/atomSystem';
-import { StarSystem, Star, PrimaryPlanet, Tag, Planet, SecondaryPlanet, GeneralPlanet, PointOfInterest } from '../interfaces/Sector';
+import { StarSystem, Star, PrimaryPlanet, Tag, Planet, SecondaryPlanet, GeneralPlanet, PointOfInterest, FullStarSystem } from '../interfaces/Sector';
 
 import { Button, Container, Card, makeStyles, createStyles } from '@material-ui/core';
 
 import useKeyValueListStyle from '../styles/useKeyValueListStyle';
 
 import './data-view.scss';
+import FullStarSystemSelector from '../selectors/FullSystemSelector';
 
 const useStyles = makeStyles(createStyles({
     starCard: {
@@ -65,7 +66,9 @@ const useStyles = makeStyles(createStyles({
 
 const SystemView: FC = () => {
 
-    const [system, setSystem] = useRecoilState<StarSystem>(systemAtom);
+    const system: FullStarSystem = useRecoilValue<FullStarSystem>(FullStarSystemSelector);
+    const setSystem = useSetRecoilState(systemAtom);
+    
     const classes = useStyles();
     const listStyle = useKeyValueListStyle();
 
@@ -73,6 +76,12 @@ const SystemView: FC = () => {
         setSystem(null);
     }
     
+    if(system === null) {
+        return null;
+    }
+
+    console.log("SYSTEM", system);
+
     return (
         <Container className="data-view">
 

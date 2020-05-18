@@ -3,9 +3,9 @@ import React, { FC, useState } from "react";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import { Container, Input, TextField, Card, IconButton } from "@material-ui/core";
 
-import { useRecoilState } from "../utils/Recoil";
+import { useRecoilState, useRecoilValue } from "../utils/Recoil";
 
-import { CubeSector } from "../interfaces/Sector";
+import { Sector, FullSector } from "../interfaces/Sector";
 import { NonPlayerCharacter, Skill } from "../interfaces/Npc";
 
 import sectorAtom from "../atoms/atomSector";
@@ -23,6 +23,8 @@ import atomNpcSelection from '../atoms/atomNpcSelection';
  
 import "./data-view.scss";
 import AttributeContainer from "../components/AttributeContainer";
+import FullSectorSelector from "../selectors/FullSector";
+import npcAtoms from "../atoms/npcAtoms";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -124,19 +126,27 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const NpcListView: FC = () => {
-    const [sector, setSector] = useRecoilState<CubeSector>(sectorAtom);
+    
+    const sector = useRecoilValue<FullSector>(FullSectorSelector);
     const [npcSelected, setNpcSelected] = useRecoilState<NonPlayerCharacter|null>(atomNpcSelection);
 
+    const [npcs, setNpcs] = useRecoilState(npcAtoms);
     const [searchKey, setSearchKey] = useState("");
     const classes = useStyles();
 
     function generateRandomNpc() {
         const npc = randomNpcGenerator();
-        const ns: CubeSector = { ...sector };
-        const npcs = [...ns.npcs];
-        npcs.push(npc);
-        ns.npcs = npcs;
-        setSector(ns);
+        
+        setNpcs((oldNpcs: NonPlayerCharacter[]) => [
+            ...oldNpcs,
+            npc
+        ]);
+
+        // const ns: Sector = { ...sector };
+        // const npcs = [...ns.npcs];
+        // npcs.push(npc);
+        // ns.npcs = npcs;
+        // setSector(ns);
     }
 
     function openNpcEditor(type: string, npc: NonPlayerCharacter) {
@@ -150,14 +160,14 @@ const NpcListView: FC = () => {
 
     const activeNpcs =
         searchKey.length > 0
-            ? sector.npcs.filter((n: NonPlayerCharacter) => {
+            ? npcs.filter((n: NonPlayerCharacter) => {
                   if (n.name.includes(searchKey)) return true;
                   if (n.gender.includes(searchKey)) return true;
                   if (n.description.includes(searchKey)) return true;
 
                   return false;
               })
-            : sector.npcs;
+            : npcs;
 
     return (
         <Container className="data-view">

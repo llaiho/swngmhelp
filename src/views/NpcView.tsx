@@ -2,8 +2,8 @@ import React, { FC, useState, useEffect } from "react";
 
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 
-import { useRecoilState } from "../utils/Recoil";
-import { Container, Card, Button, Select, MenuItem, TextField } from "@material-ui/core";
+import { useRecoilState, useSetRecoilState } from "../utils/Recoil";
+import { Container, Card, Button, Select, MenuItem } from "@material-ui/core";
 import atomNpcSelection from "../atoms/atomNpcSelection";
 import { NonPlayerCharacter, Attributes, Skill, NpcMotivation } from "../interfaces/Npc";
 
@@ -16,11 +16,10 @@ import AttributeContainer from "../components/AttributeContainer";
 import useKeyValueListStyle from "../styles/useKeyValueListStyle";
 
 import "./data-view.scss";
-import sectorAtom from "../atoms/atomSector";
-import { CubeSector } from "../interfaces/Sector";
 import SKILLS from "../data/Skills";
 import { MANNERS, MOTIVATION, WANT, POWER, HOOK, OUTCOME } from "../generators/npcGenerators";
 import TextInput from "../components/TextInput";
+import npcAtoms from "../atoms/npcAtoms";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -209,7 +208,8 @@ const NpcView: FC = () => {
     const [npc, setNpcSelected] = useRecoilState<NonPlayerCharacter | null>(atomNpcSelection);
     const [edited, setEdited] = useState(false);
     const [oldNpc, setOldNpc] = useState<NonPlayerCharacter | null>(null);
-    const [sector, setSector] = useRecoilState<CubeSector>(sectorAtom);
+    
+    const setNpcs = useSetRecoilState(npcAtoms);
 
     const classes = useStyles();
     const listStyle = useKeyValueListStyle();
@@ -226,18 +226,20 @@ const NpcView: FC = () => {
 
     function save() {
         if (npc !== null) {
-            const sec: CubeSector = { ...sector } as CubeSector;
-            const npcs: NonPlayerCharacter[] = [...sec.npcs];
-            const npcIndex = npcs.findIndex((n: NonPlayerCharacter) => n && n.id === npc.id);
-            npcs.splice(npcIndex, 1, npc);
-            sec.npcs = npcs;
-            setSector(sec);
+
+            setNpcs((oldNpcs: NonPlayerCharacter[])=> {
+                const newNpcs = [...oldNpcs];
+                const npcIndex = newNpcs.findIndex((n: NonPlayerCharacter) => n && n.id === npc.id);
+                newNpcs.splice(npcIndex, 1, npc);
+                return newNpcs;
+            });
+
             setEdited(false);
         }
     }
 
     function cancel() {
-        setNpcSelected(oldNpc);
+        // setNpcSelected(oldNpc);
         setEdited(false);
     }
 

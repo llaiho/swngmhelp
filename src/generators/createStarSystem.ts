@@ -1,19 +1,16 @@
-import { StarSystem, Star, Hex } from "../interfaces/Sector";
+import { StarSystem, Star, Hex, PointOfInterest } from "../interfaces/Sector";
 import { v4 as uuidv4 } from 'uuid';
 import { arnd, rnd, roll } from "../utils/randUtils";
 import createPlanet, { createSecondaryPlanet, createGeneralPlanet } from "./createPlanet";
 import createPOI from "./createPOI";
 
-
-
 const createStarSystem = (hex?: Hex): StarSystem => {
-
 
     const system: StarSystem = {
         id: uuidv4(),
         name: arnd(STARSYSTEMNAMES),
         planets: [],
-        position: [rnd(0, 7), rnd(0, 9)],
+        position: [0,0,0],
         routes: [],
         star: [],
         POIs: []
@@ -53,10 +50,13 @@ const createStarSystem = (hex?: Hex): StarSystem => {
 
     // Create points of interest
     chance = 70;
+    const pois: PointOfInterest[] = [];
     while(roll(chance)) {
-        system.POIs.push(createPOI("system"));
+        pois.push(createPOI("system"));
         chance = chance - 20;
     }
+
+    system.POIs = pois; // .map((p: PointOfInterest) => p.id);
 
     return system;
 };

@@ -1,10 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import "./App.css";
-import createSector from "./generators/createSector";
+
 import RootView from "./views/RootView";
 
-import logo from "./views/swncover.png";
-import MainControls from "./components/MainControls";
 import Header from "./views/Header";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 

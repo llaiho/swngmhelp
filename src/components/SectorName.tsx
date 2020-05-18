@@ -1,6 +1,6 @@
 import React, {FC, useState, useEffect} from 'react';
 import sectorAtom from '../atoms/atomSector';
-import { CubeSector } from '../interfaces/Sector';
+import { Sector } from '../interfaces/Sector';
 import { useRecoilValue, useRecoilState } from '../utils/Recoil';
 import { makeStyles, createStyles, Input, TextField } from '@material-ui/core';
 
@@ -52,7 +52,7 @@ const SectorName: FC = () => {
     const [oldName, setOldName] = useState("");
 
     const classes = useStyles();
-    const [sector, setSector] = useRecoilState<CubeSector>(sectorAtom);
+    const [sector, setSector] = useRecoilState<Sector>(sectorAtom);
     
 
     useEffect(() => {
@@ -84,7 +84,7 @@ const SectorName: FC = () => {
     }
 
     function saveEdit() {
-        const nSec: CubeSector = {...sector};
+        const nSec: Sector = {...sector};
         nSec.name = name;
         setSector(nSec);
         setEditMode(false);

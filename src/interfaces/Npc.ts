@@ -1,5 +1,7 @@
+import { Uuid } from "./Sector";
+
 export interface NonPlayerCharacter {
-    id: string;
+    id: Uuid;
     name: string;
     gender: string;
     description: string;

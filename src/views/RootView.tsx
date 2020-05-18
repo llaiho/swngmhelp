@@ -1,39 +1,46 @@
-import React, { FC, useContext, useEffect } from "react";
+import React, { FC, useEffect } from "react";
 
-import { CubeSector } from "../interfaces/Sector";
+import { Sector, FullSector } from "../interfaces/Sector";
 
 import sectorAtom from '../atoms/atomSector';
-import createSector from "../generators/createSector";
-import { useRecoilState, useRecoilValue } from "../utils/Recoil";
-import systemAtom from "../atoms/atomSystem";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "../utils/Recoil";
 import viewModeSelector from "../atoms/viewModeSelector";
 import SystemView from "./SystemView";
 import CubeSectorMap from "../components/CubeSectorMap";
-import createCubeSector from "../generators/createCubeSector";
-import { Button, Container } from "@material-ui/core";
+import createSector from "../generators/createCubeSector";
+
 import NpcListView from "./NpcListView";
 import NpcView from "./NpcView";
+import FullSectorSelector from "../selectors/FullSector";
+import hexAtoms from "../atoms/hexAtoms";
+import starSystemAtoms from "../atoms/starSystemAtoms";
 
 const RootView: FC = () => {
 
     const viewMode = useRecoilValue(viewModeSelector);
-    const [sector, setSector] = useRecoilState<CubeSector>(sectorAtom);
+    const fullSector  = useRecoilValue<FullSector>(FullSectorSelector);
+    const setSector = useSetRecoilState(sectorAtom);
+    const setHexes = useSetRecoilState(hexAtoms);
+    const setStarSystems = useSetRecoilState(starSystemAtoms);
 
     useEffect(() => {
-
-        if (sector === null) {
-            setSector(createCubeSector({
+        if (fullSector === null) {
+            const [newSector, hexes, starSystems] = createSector({
                 density: "normal",
                 rings: 6
-            }));
+            });
+            setHexes(hexes);
+            setStarSystems(starSystems);
+            setSector(newSector);
         }
 
-    }, [sector]);
+    }, [fullSector, setSector, setHexes, setStarSystems]);
 
-    if (sector === null) {
+    if (fullSector === null) {
         return null;
     }
-
+    
+    
     switch (viewMode) {
         case "SYSTEM":
             return <SystemView />;
@@ -43,7 +50,7 @@ const RootView: FC = () => {
             return <NpcView />;
         default:
             return (
-                <CubeSectorMap sector={sector} />
+                <CubeSectorMap />
             )
         // return <SectorMap sector={sector} />
     }

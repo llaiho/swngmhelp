@@ -55,3 +55,7 @@ export function useRecoilState<T>(atom: Atom|Selector): [T, (value: T|null|undef
 export function useRecoilValue<T>(atom: Atom|Selector): T {
     return Recoil.useRecoilValue(atom);
 }
+
+export function useSetRecoilState<T>(atom: Atom|Selector): any {
+    return Recoil.useSetRecoilState(atom);
+}

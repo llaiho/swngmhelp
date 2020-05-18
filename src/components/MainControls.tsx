@@ -16,12 +16,12 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 import './controls.scss';
 import sectorAtom from '../atoms/atomSector';
-import { Sector, CubeSector } from '../interfaces/Sector';
+import { OldSector, Sector } from '../interfaces/Sector';
 import atomMapPosition from '../atoms/atomMapPosition';
 
 const MainControls: FC = () => {
 
-    const [sector, setSector] = useRecoilState<CubeSector>(sectorAtom);
+    const [sector, setSector] = useRecoilState<Sector>(sectorAtom);
 
     function saveToLocalStorage() {
         window.localStorage.setItem("SWN_Sector", JSON.stringify(sector));
@@ -30,7 +30,7 @@ const MainControls: FC = () => {
     function loadFromLocalStorage() {
         const strSec = window.localStorage.getItem("SWN_Sector");
         if (strSec) {
-            const parsedSector: CubeSector = JSON.parse(strSec);
+            const parsedSector: Sector = JSON.parse(strSec);
             setSector(parsedSector);
         } else {
             console.warn("No stored sector in localstorage");

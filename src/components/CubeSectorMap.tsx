@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { CubeSector, StarSystem, PrimaryPlanet, Sector, Hex, StarSize, Population, Planet } from '../interfaces/Sector';
+import { Sector, StarSystem, PrimaryPlanet, OldSector, Hex, StarSize, Population, Planet, FullSector } from '../interfaces/Sector';
 
 import systemAtom from '../atoms/atomSystem';
 
@@ -22,18 +22,18 @@ import hexaImg from './plain-circle.svg';
 import selectedHexImg from './selectedHex.svg';
 
 import './sector-map.scss';
+import FullSectorSelector from '../selectors/FullSector';
 
 
-interface SectorMapProps {
-    sector: CubeSector
-}
 
 interface StarOnSectorMapProps {
     system: StarSystem;
     zoom: number;
 }
 
-const CubeSectorMap: FC<SectorMapProps> = (props: SectorMapProps) => {
+const CubeSectorMap: FC = () => {
+
+    const sector = useRecoilValue<FullSector>(FullSectorSelector);
 
     const zoomLevels: number[] = [10, 25, 50, 75, 100, 150, 200];
 
@@ -46,12 +46,16 @@ const CubeSectorMap: FC<SectorMapProps> = (props: SectorMapProps) => {
     const dx = wSize.width !== undefined ? (wSize.width / 2) - hexSize + mapPosition[0] : 800;
     const dy = wSize.height !== undefined ? wSize.height / 2 - hexSize + 48 + mapPosition[1] : 600;
 
+    if(sector === null) {
+        return null;
+    }
+
     return (
         <>
             <SectorMapControls />
             <div className="map-container">
-                {props.sector.hexes.map((hex: Hex) => {
-                    const system = props.sector.stars.find((s: StarSystem) => s.inHex === hex.id);
+                {sector.hexes.map((hex: Hex) => {
+                    const system = sector.stars.find((s: StarSystem) => s.inHex === hex.id);
                     return <Hexagon hex={hex} dx={dx} dy={dy} system={system ? system : undefined} zoomLevel={zoomLevel} key={hex.id} />
                 })}
             </div>

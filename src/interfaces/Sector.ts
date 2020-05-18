@@ -1,18 +1,29 @@
 import { NonPlayerCharacter } from "./Npc";
 
+export type Uuid = string;
 
-export interface Sector {
-    id: string;
+export interface OldSector {
+    id: Uuid;
     name: string;
-    stars: StarSystem[];
+    stars: Uuid[];
     rows: number;
     columns: number;
     density: string;
 }
 
 
-export interface CubeSector {
-    id: string;
+export interface Sector {
+    id: Uuid;
+    name: string;
+    stars: Uuid[];
+    hexes: Uuid[],
+    rings: number;
+    density: string;
+    npcs: Uuid[];
+}
+
+export interface FullSector {
+    id: Uuid;
     name: string;
     stars: StarSystem[];
     hexes: Hex[],
@@ -22,7 +33,7 @@ export interface CubeSector {
 }
 
 export interface StarSystem {
-    id: string;
+    id: Uuid;
     name: string;
     position: [number, number, number?];
     inHex?: string;
@@ -33,15 +44,31 @@ export interface StarSystem {
 
     star: Star[];
 
-    POIs: PointOfInterest[]
+    POIs: PointOfInterest[];
+}
+
+export interface FullStarSystem {
+    id: Uuid;
+    name: string;
+    position: [number, number, number?];
+    inHex?: string;
+
+    routes: string[];
+
+    planets: Planet[];
+
+    star: Star[];
+
+    POIs: PointOfInterest[];
 }
 
 export interface Hex {
+    id: Uuid;
     x: number;
     y: number;
     z: number;
     type?: string;
-    id: string;
+    
 }
 
 
@@ -102,22 +129,22 @@ export enum TechLevel {
 };
 
 export interface Star {
-    id: string;
+    id: Uuid;
     color: string;
     size: StarSize,
 }
 
 export interface Planet {
-    id: string;
+    id: Uuid;
     name: string;
 
     planetGenre: "primary"|"secondary"|"general";
 
-    starsystemId: string;
+    starsystemId: Uuid;
 
     description: string;
 
-    POIs: PointOfInterest[];
+    POIs: Uuid[];
 }
 
 export interface PrimaryPlanet extends Planet{
@@ -168,7 +195,7 @@ export interface Tag {
 }
 
 export interface PointOfInterest {
-    id: string;
+    id: Uuid;
     name: string;
     point: string;
     occupied: string;

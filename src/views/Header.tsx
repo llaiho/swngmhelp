@@ -11,7 +11,7 @@ import SaveAltIcon from "@material-ui/icons/SaveAlt";
 
 import { useRecoilState } from "../utils/Recoil";
 import atomMainView from "../atoms/atomMainView";
-import { CubeSector } from "../interfaces/Sector";
+import { Sector } from "../interfaces/Sector";
 import sectorAtom from "../atoms/atomSector";
 
 const useStyles = makeStyles(
@@ -117,7 +117,7 @@ const Header: FC = () => {
     const classes = useStyles();
 
     const [mainView, setMainView] = useRecoilState<string>(atomMainView);
-    const [sector, setSector] = useRecoilState<CubeSector>(sectorAtom);
+    const [sector, setSector] = useRecoilState<Sector>(sectorAtom);
 
     function saveToLocalStorage() {
         window.localStorage.setItem("SWN_Sector", JSON.stringify(sector));
@@ -126,7 +126,7 @@ const Header: FC = () => {
     function loadFromLocalStorage() {
         const strSec = window.localStorage.getItem("SWN_Sector");
         if (strSec) {
-            const parsedSector: CubeSector = JSON.parse(strSec);
+            const parsedSector: Sector = JSON.parse(strSec);
             setSector(parsedSector);
         } else {
             console.warn("No stored sector in localstorage");
