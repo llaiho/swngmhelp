@@ -4,7 +4,7 @@ import hexAtoms from "../atoms/hexAtoms";
 import starSystemAtoms from "../atoms/starSystemAtoms";
 import npcAtoms from "../atoms/npcAtoms";
 import { Sector, FullSector, Hex, Uuid, StarSystem, FullStarSystem, PointOfInterest } from "../interfaces/Sector";
-import { NonPlayerCharacter } from "../interfaces/Npc";
+import { Character } from "../interfaces/Npc";
 import systemAtom from "../atoms/atomSystem";
 import poiAtoms from "../atoms/poiAtoms";
 

@@ -1,4 +1,13 @@
-import { NonPlayerCharacter, NpcMotivation, Possession, Skill } from "../interfaces/Npc";
+import {
+    Character,
+    NpcMotivation,
+    Possession,
+    Skill,
+    NonPlayerCharacterTemplate,
+    Adjust,
+    randomRange,
+    Customizer,
+} from "../interfaces/Npc";
 import { v4 } from "uuid";
 import { arnd, rnd, arnds, roll, grnd } from "../utils/randUtils";
 import { TechLevel } from "../interfaces/Sector";
@@ -6,9 +15,17 @@ import { TechLevel } from "../interfaces/Sector";
 import faker from "faker";
 
 import SKILLS from "../data/Skills";
+import { rollDice } from "../utils/dice";
+import { getAttributeBonus, rollHitpoints } from "../utils/characterUtils";
 
-export function randomNpcGenerator(): NonPlayerCharacter {
-    const npc: NonPlayerCharacter = {
+interface PossessionGeneratorOptions {
+    techlevel?: TechLevel;
+    wealthLevel?: number;
+    weapons?: boolean;
+}
+
+export function randomNpcGenerator(): Character {
+    const npc: Character = {
         id: v4(),
         name: "Generated Random Person",
         gender: arnd(["Male", "Female"]),
@@ -25,7 +42,17 @@ export function randomNpcGenerator(): NonPlayerCharacter {
         motivation: motivationGenerator(),
         description: "",
         possessions: possessionGenerator({ wealthLevel: rnd(1, 10) }),
+        hitpoints: 0,
+        attackBonus: 0,
+        hitDice: 1,
+        armourClass: 10,
+        charClass: "",
+        level: 0,
+
     };
+
+    // Roll hps
+    npc.hitpoints = rollHitpoints(npc);
 
     // Name
 
@@ -72,12 +99,17 @@ export function randomNpcGenerator(): NonPlayerCharacter {
         npc.skills.push(randomCombatSkill(rnd(0, 1)));
     }
 
+    npc.description = generateDescription(npc);
+
+    return npc;
+}
+
+export function generateDescription(npc: Character): string {
     const genderPron: string = npc.gender === "Male" ? "He" : "She";
 
     function rndHairColor() {
         return arnd(["blond", "blond", "brown", "brown", "dark", "dark", "reddish", "gray", "white"]);
     }
-
     const descr = `${genderPron} is${arnd([
         " a tiny",
         " a short",
@@ -110,17 +142,148 @@ export function randomNpcGenerator(): NonPlayerCharacter {
         "a colorful mohawk",
     ])}.`;
 
-    npc.description = descr;
-
-    return npc;
+    return descr;
 }
 
-interface PossessionGeneratorOptions {
-    techlevel?: TechLevel;
-    wealthLevel?: number;
-    weapons?: boolean;
+/**
+ * Generate a new NPC from template
+ *
+ * @param tmpl
+ */
+export function generateNpcFromTemplate(tmpl: NonPlayerCharacterTemplate): Character {
+    const npc = randomNpcGenerator();
+    return overlayTemplateToNpc(npc, tmpl);
 }
 
+/**
+ * Adjust existing Npc with a template
+ *
+ * @param npc
+ * @param tmpl
+ */
+export function overlayTemplateToNpc(npc: Character, tmpl: NonPlayerCharacterTemplate): Character {
+    const newNpc = { ...npc };
+
+    function adjust(val: Adjust, orig: number): number {
+        return orig + val.amount;
+    }
+
+    function range(val: randomRange): number {
+        return rnd(val.min, val.max);
+    }
+
+    function options<T>(val: T[]): T {
+        return arnd(val);
+    }
+
+    function numberOrRange(val: number | randomRange): number {
+        if (typeof val === "number") return val;
+        return range(val);
+    }
+
+    function numberOrAdjust(val: number | Adjust, orig: number): number {
+        if (typeof val === "number") return val;
+        return adjust(val, orig);
+    }
+
+    function custom<T>(val: Customizer<T>, orig: T, npc: Character): T {
+        if (typeof val.fn === "function") {
+            return val.fn(npc);
+        }
+
+        if (val.options && val.options.length > 0) {
+            return arnd(val.options);
+        }
+
+        return orig;
+    }
+
+    function customNumber(val: Customizer<number>, orig: number, npc: Character): number {
+        if (typeof val.fn === "function") {
+            return val.fn(npc);
+        }
+
+        if (typeof orig === "number" && typeof val.adjust === "number") {
+            return adjust({amount: val.adjust}, orig);
+            
+        }
+
+        if (typeof orig === "number" && typeof val?.range?.min === "number") {
+            return range(val.range);
+        }
+
+        if (val.options && val.options.length > 0) {
+            return arnd(val.options);
+        }
+
+        return orig;
+    }
+
+    function numberOrCustom(val: number | Customizer<number>, orig: number, npc: Character): number {
+        if (typeof val === "number") return val;
+        return customNumber(val, orig, npc);
+    }
+
+    // Adjust age
+    if (tmpl.age) {
+        newNpc.age = numberOrRange(tmpl.age);
+    }
+
+    // Adjust Gender
+    if (tmpl.gender) {
+        newNpc.gender = tmpl.gender;
+        newNpc.description = generateDescription(newNpc);
+    }
+
+    if (!newNpc.attributes) {
+        newNpc.attributes = {
+            str: 11,
+            dex: 11,
+            con: 11,
+            int: 11,
+            wis: 11,
+            cha: 11,
+        };
+    }
+
+    if (tmpl.str) newNpc.attributes.str = numberOrCustom(tmpl.str, newNpc.attributes.str, newNpc);
+    if (tmpl.dex) newNpc.attributes.dex = numberOrCustom(tmpl.dex, newNpc.attributes.dex, newNpc);
+    if (tmpl.con) newNpc.attributes.con = numberOrCustom(tmpl.con, newNpc.attributes.con, newNpc);
+    if (tmpl.int) newNpc.attributes.int = numberOrCustom(tmpl.int, newNpc.attributes.int, newNpc);
+    if (tmpl.wis) newNpc.attributes.wis = numberOrCustom(tmpl.wis, newNpc.attributes.wis, newNpc);
+    if (tmpl.cha) newNpc.attributes.cha = numberOrCustom(tmpl.cha, newNpc.attributes.cha, newNpc);
+    
+    // Add combat skills
+    if(tmpl.combatSkills) {
+        
+        // Remove existing combat skills
+        const nSkills: Skill[] = newNpc.skills ? newNpc.skills.filter((s: Skill) => s.type !== "combat") : [];
+        
+        if(typeof tmpl.combatSkills === "number") {
+                
+            const allCombatSkills = SKILLS.filter((s: Skill) => s.type === "combat");
+            arnds(allCombatSkills, tmpl.combatSkills, true).forEach((s: Skill) => {
+                s.value = rnd(0,2);
+                nSkills.push(s);
+            });
+
+        }
+
+        
+
+
+
+        newNpc.skills = nSkills;
+    }
+
+    return newNpc;
+}
+
+/**
+ * Generate possesions
+ *
+ * @param options
+ */
 export function possessionGenerator(options: PossessionGeneratorOptions): Possession[] {
     const possessions: Possession[] = [];
 

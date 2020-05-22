@@ -4,16 +4,28 @@ import faker from "faker";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 
 import { useRecoilState, useSetRecoilState } from "../utils/Recoil";
-import { Container, Card, Button, Select, MenuItem, IconButton } from "@material-ui/core";
+import {
+    Container,
+    Card,
+    Button,
+    Select,
+    MenuItem,
+    IconButton,
+    Grid,
+    ButtonGroup,
+    CircularProgress,
+    Fab,
+} from "@material-ui/core";
 import atomNpcSelection from "../atoms/atomNpcSelection";
-import { NonPlayerCharacter, Attributes, Skill, NpcMotivation } from "../interfaces/Npc";
+import { Character, Attributes, Skill, NpcMotivation } from "../interfaces/Npc";
 
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import DoneOutlineIcon from "@material-ui/icons/DoneOutline";
+import SaveIcon from "@material-ui/icons/Save";
+import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import CancelIcon from "@material-ui/icons/Cancel";
-import ExposurePlus1Icon from "@material-ui/icons/ExposurePlus1";
-import ExposureNeg1Icon from "@material-ui/icons/ExposureNeg1";
 import RefreshIcon from "@material-ui/icons/Refresh";
+import CasinoIcon from "@material-ui/icons/Casino";
 
 import AttributeContainer from "../components/AttributeContainer";
 import useKeyValueListStyle from "../styles/useKeyValueListStyle";
@@ -24,7 +36,26 @@ import { MANNERS, MOTIVATION, WANT, POWER, HOOK, OUTCOME } from "../generators/n
 import TextInput from "../components/TextInput";
 import npcAtoms from "../atoms/npcAtoms";
 import { arnd } from "../utils/randUtils";
-import { stringify } from "querystring";
+
+import {
+    rollHitpoints,
+    getAttributeBonus,
+    getBaseAttackBonus,
+    getPunchAttackBonus,
+    getStabAttackBonus,
+    getShootAttackBonus,
+    getPilotAttackBonus,
+    characterIsNpc,
+    characterIsWarrior,
+    getHpRange,
+} from "../utils/characterUtils";
+import LabelValue from "../components/LabelValue";
+
+import CharacterClassCard from "./cards/CharacterClass";
+import EditableNumber from "../components/EditableNumber";
+import CharacterAttributes from "./cards/CharacterAttributes";
+import CharacterSkills from "./cards/CharacterSkills";
+import { insertOrUpdateCharacter } from "../firebase/apiCharacters";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -158,6 +189,13 @@ const useStyles = makeStyles((theme: Theme) =>
                     },
                 },
             },
+            "& h3 > small.helpText": {
+                fontSize: "0.8rem",
+                fontWeight: "normal",
+                fontStyle: "italic",
+                display: "block",
+                marginTop: "-1rem",
+            },
         },
         wrapper: {
             display: "flex",
@@ -197,6 +235,7 @@ const useStyles = makeStyles((theme: Theme) =>
                 },
             },
         },
+
         select: {
             width: "100%",
             fontFamily: "Candara, Arial",
@@ -210,11 +249,13 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const NpcView: FC = () => {
-    const [npc, setNpcSelected] = useRecoilState<NonPlayerCharacter | null>(atomNpcSelection);
+    const [npc, setNpcSelected] = useRecoilState<Character | null>(atomNpcSelection);
     const [edited, setEdited] = useState(false);
-    const [oldNpc, setOldNpc] = useState<NonPlayerCharacter | null>(null);
+    const [oldNpc, setOldNpc] = useState<Character | null>(null);
 
-    const setNpcs = useSetRecoilState<NonPlayerCharacter[]>(npcAtoms);
+    const [saving, setSaving] = useState<boolean>(false);
+
+    const setNpcs = useSetRecoilState<Character[]>(npcAtoms);
 
     const classes = useStyles();
     const listStyle = useKeyValueListStyle();
@@ -222,6 +263,10 @@ const NpcView: FC = () => {
     useEffect(() => {
         if (oldNpc === null) {
             setOldNpc(npc);
+        } else {
+            if (oldNpc !== npc) {
+                setEdited(true);
+            }
         }
     }, [oldNpc, npc]);
 
@@ -231,14 +276,34 @@ const NpcView: FC = () => {
 
     function save() {
         if (npc !== null) {
-            setNpcs((oldNpcs: NonPlayerCharacter[]) => {
-                const newNpcs = [...oldNpcs];
-                const npcIndex = newNpcs.findIndex((n: NonPlayerCharacter) => n && n.id === npc.id);
-                newNpcs.splice(npcIndex, 1, npc);
-                return newNpcs;
-            });
+            
 
-            setEdited(false);
+            // setEdited(false);
+            setSaving(true);
+
+
+            if(npc.firebaseId === undefined) {
+                insertOrUpdateCharacter(npc).then((ids: [string, string]) => {
+
+                    
+                    setNpcs((oldNpcs: Character[]) => {
+                        
+                        
+                        const newNpcs = [...oldNpcs];
+                        const npcIndex = newNpcs.findIndex((n: Character) => n && n.id === npc.id);
+                        const newNpc = {...npc, firebaseId: ids[0]};
+                        newNpcs.splice(npcIndex, 1, newNpc);
+                        return newNpcs;
+                    });
+
+                    setSaving(false);
+                    setEdited(false)
+                    
+                });
+            }
+
+            
+
         }
     }
 
@@ -258,22 +323,8 @@ const NpcView: FC = () => {
             if (name === "Wisdom") attrs.wis = value;
             if (name === "Charisma") attrs.cha = value;
 
-            const nnpc: NonPlayerCharacter = { ...npc } as NonPlayerCharacter;
+            const nnpc: Character = { ...npc } as Character;
             nnpc.attributes = attrs;
-            setNpcSelected(nnpc);
-            setEdited(true);
-        }
-    }
-
-    function editSkill(skill: Skill) {
-        
-        if (npc && npc.skills) {
-            const skills: Skill[] = npc.skills.filter((s: Skill) => s.name !== skill.name);
-            skills.push(skill);
-
-            const nnpc: NonPlayerCharacter = { ...npc } as NonPlayerCharacter;
-            nnpc.skills = skills.filter((s: Skill) => s.value > -1);
-
             setNpcSelected(nnpc);
             setEdited(true);
         }
@@ -281,7 +332,7 @@ const NpcView: FC = () => {
 
     function editMotivation(type: string, value: string) {
         if (npc && npc.motivation) {
-            const nnpc: NonPlayerCharacter = { ...npc } as NonPlayerCharacter;
+            const nnpc: Character = { ...npc } as Character;
             const mot: NpcMotivation = { ...nnpc.motivation };
             if (type === "initialManner") mot.initialManner = value;
             if (type === "hook") mot.hook = value;
@@ -302,22 +353,37 @@ const NpcView: FC = () => {
         // if (key === "description") nnpc.description = value;
         // if (key === "name") nnpc.name = value;
 
-        setNpcSelected((prevState: NonPlayerCharacter | null) => {
-            
+        setNpcSelected((prevState: Character | null) => {
             if (prevState !== null) {
-                const nState: NonPlayerCharacter = {...prevState};
-            
-                if (key === "name") {                
+                const nState: Character = { ...prevState };
+
+                if (key === "name") {
                     nState.name = value;
                 }
                 if (key === "description") {
                     nState.description = value;
                 }
-                
-                return nState;    
+
+                return nState;
             }
             return null;
-            
+        });
+        setEdited(true);
+    }
+
+    function editMainNumberDate(key: keyof Character, value: number) {
+        console.log("EDIT NUMBER", key, value);
+        setNpcSelected((prevState: Character | null) => {
+            if (prevState !== null) {
+                const nState: Character = { ...prevState };
+
+                console.log(`Current value of ${key} is ${nState[key]}`);
+                (nState[key] as any) = value;
+                console.log(`New value of ${key} is ${nState[key]}`);
+
+                return nState;
+            }
+            return null;
         });
         setEdited(true);
     }
@@ -331,14 +397,20 @@ const NpcView: FC = () => {
         } else {
             newName = `${faker.name.firstName(1)} ${faker.name.lastName(1)}`;
         }
-        
+
         editMainStringData("name", newName);
+    }
+
+    function updateCharacter(character: Character): void {
+        console.log("Update character", character);
+        setNpcSelected(character);
     }
 
     if (npc === null) {
         return null;
     }
 
+    const hpRange = getHpRange(npc);
     return (
         <Container className="data-view">
             <header className={classes.header}>
@@ -361,61 +433,89 @@ const NpcView: FC = () => {
                         variant="outlined"
                         startIcon={<CancelIcon />}
                         color="secondary"
-                        disabled={!edited}
+                        disabled={!edited || saving}
                     >
                         Cancel
                     </Button>
 
-                    <Button
-                        onClick={save}
-                        variant="contained"
-                        startIcon={<DoneOutlineIcon />}
-                        color="primary"
-                        disabled={!edited}
-                    >
-                        Save
-                    </Button>
+                    <FabSave onClick={save} deactivated={!edited} saving={saving} />
                 </div>
             </header>
 
-            {npc.attributes && (
-                <>
-                    <h4 className={classes.partHeader}>Attributes</h4>
-                    <Card classes={{ root: classes.card }}>
-                        <p className="attributes">
-                            <AttributeContainer name="Strength" value={npc.attributes.str} onEdit={editAttributes} />
-                            <AttributeContainer name="Dexterity" value={npc.attributes.dex} onEdit={editAttributes} />
-                            <AttributeContainer
-                                name="Constitution"
-                                value={npc.attributes.con}
-                                onEdit={editAttributes}
-                            />
-                            <AttributeContainer
-                                name="Intelligence"
-                                value={npc.attributes.int}
-                                onEdit={editAttributes}
-                            />
-                            <AttributeContainer name="Wisdom" value={npc.attributes.wis} onEdit={editAttributes} />
-                            <AttributeContainer name="Charisma" value={npc.attributes.cha} onEdit={editAttributes} />
-                        </p>
-                    </Card>
-                </>
-            )}
+            <h4 className={classes.partHeader}>Attributes</h4>
+            <CharacterAttributes character={npc} setCharacter={setNpcSelected} />
 
             <h4 className={classes.partHeader}>Skills</h4>
+
+            <CharacterSkills character={npc} setCharacter={setNpcSelected} />
+
+            <h4 className={classes.partHeader}>Combat Data</h4>
             <Card classes={{ root: classes.card }}>
-                <div className={classes.wrapper}>
-                    {SKILLS.map((s: Skill) => {
-                        if (npc.skills) {
-                            const npcSkill = npc.skills.find((ns: Skill) => ns.name === s.name);
-                            if (npcSkill) {
-                                return <SkillContainer skill={npcSkill} key={npcSkill.name} onEdit={editSkill} />;
-                            }
-                        }
-                        return <SkillContainer skill={s} key={s.name} onEdit={editSkill} />;
-                    })}
-                </div>
+                <Grid container direction="row" justify="space-around" alignItems="center">
+                    <Grid item>
+                        <h3>
+                            Hitpoints: <big>{npc.hitpoints}</big>{" "}
+                            <IconButton onClick={() => editMainNumberDate("hitpoints", rollHitpoints(npc))}>
+                                <CasinoIcon />
+                            </IconButton>
+                            <small className="helpText">
+                                Ranges between {hpRange[0]} - {hpRange[1]}
+                            </small>
+                        </h3>
+                    </Grid>
+                    {characterIsNpc(npc) && (
+                        <Grid item>
+                            <h3>
+                                Hit Dice (d8)
+                                <big>
+                                    <EditableNumber
+                                        value={npc.hitDice}
+                                        onEdit={(k: string, val: number) =>
+                                            editMainNumberDate(k as keyof Character, val)
+                                        }
+                                        name="hitDice"
+                                    />
+                                </big>
+                            </h3>
+                        </Grid>
+                    )}
+                    {!characterIsNpc(npc) && (
+                        <Grid item>
+                            <h3>
+                                {npc.charClass} (d6{characterIsWarrior(npc) ? "+2" : ""}): <big>{npc.level}</big>
+                            </h3>
+                        </Grid>
+                    )}
+
+                    <Grid item>
+                        <h3>
+                            Armour Class:{" "}
+                            <big>
+                                <EditableNumber
+                                    value={npc.armourClass}
+                                    onEdit={(k: string, val: number) => editMainNumberDate(k as keyof Character, val)}
+                                    name="armourClass"
+                                />
+                            </big>
+                        </h3>
+                    </Grid>
+                    <Grid item>
+                        <h3>
+                            Base Attack Bonus: <big>{getBaseAttackBonus(npc)}</big>
+                        </h3>
+                    </Grid>
+
+                    <Grid item>
+                        <LabelValue label="Punch" value={getPunchAttackBonus(npc)} />
+                        <LabelValue label="Stab" value={getStabAttackBonus(npc)} />
+                        <LabelValue label="Shoot" value={getShootAttackBonus(npc)} />
+                        <LabelValue label="Pilot" value={getPilotAttackBonus(npc)} />
+                    </Grid>
+                </Grid>
             </Card>
+
+            <h4 className={classes.partHeader}>Class Information</h4>
+            <CharacterClassCard character={npc} setCharacter={setNpcSelected} />
 
             <h4 className={classes.partHeader}>Personality & Motivations & Description</h4>
             <Card classes={{ root: classes.card }}>
@@ -541,59 +641,39 @@ const NpcView: FC = () => {
     );
 };
 
-interface SkillContainerProps {
-    skill: Skill;
-    onEdit?: (skill: Skill) => void;
+interface FabSaveProps {
+    deactivated: boolean;
+    saving: boolean;
+    onClick: () => void;
 }
 
-const SkillContainer: FC<SkillContainerProps> = (props: SkillContainerProps) => {
-    const skill = props.skill;
-    const charHasSkill = skill.value > -1;
-    const editMode = props.onEdit !== undefined;
 
-    const classes = useStyles();
+const useFabStyle = makeStyles((theme: Theme) => createStyles({
+    fabWrap: {
+        position: "relative",
+        margin: theme.spacing(1),
+    },
+    fabProgress: {
+        color: "green",
+        position: 'absolute',
+        top: -6,
+        left: -6,
+        zIndex: 1,
+      },
+}))
 
-    function plusOne() {
-        if (props.onEdit && skill.value < 4) {
-            const ns: Skill = { ...skill } as Skill;
-            ns.value++;
-            props.onEdit(ns);
-        }
-    }
+const FabSave: FC<FabSaveProps> = (props: FabSaveProps) => {
 
-    function minusOne() {
-        if (props.onEdit && skill.value > -1) {
-            const ns: Skill = { ...skill } as Skill;
-            ns.value--;
-            props.onEdit(ns);
-        }
-    }
+    const classes = useFabStyle();
 
+    const statusIcon = props.saving ? <HourglassEmptyIcon /> : props.deactivated ? <DoneOutlineIcon /> : <SaveIcon />;
     return (
-        <div className={classes.skillContainer}>
-            {editMode && (
-                <Button
-                    startIcon={<ExposureNeg1Icon />}
-                    className="minusButton"
-                    disabled={skill.value < 0}
-                    variant="contained"
-                    color="primary"
-                    onClick={minusOne}
-                />
-            )}
-            <p className="skillName">{skill.name}</p>
-            <p className="skillValue">{charHasSkill ? skill.value : "-"}</p>
-            {editMode && (
-                <Button
-                    startIcon={<ExposurePlus1Icon />}
-                    className="plusButton"
-                    disabled={skill.value === 4}
-                    variant="contained"
-                    color="primary"
-                    onClick={plusOne}
-                />
-            )}
-        </div>
+        <span className={classes.fabWrap}>
+            <Fab onClick={props.onClick} color="primary" disabled={props.deactivated || props.saving}>
+                {statusIcon}
+            </Fab>
+            {props.saving && <CircularProgress size={68} className={classes.fabProgress} />}
+        </span>
     );
 };
 

@@ -3,7 +3,7 @@ import sectorAtom from "./atomSector";
 import systemAtom from "./atomSystem";
 import atomMainView from "./atomMainView";
 import atomNpcSelection from "./atomNpcSelection";
-
+import EncounterSelector from "../selectors/EncounterSelector";
 
 const viewModeSelector = selector({
     key: "viewMode",
@@ -12,10 +12,12 @@ const viewModeSelector = selector({
         const sector = get(sectorAtom);
         const system = get(systemAtom);
         const npcSelection = get(atomNpcSelection);
+        const encounter = get(EncounterSelector);
 
         if(mainView === "map") {
             if(sector === null) return "LOADING";
             if(system !== null) return "SYSTEM";
+            return "SECTOR";
         }
         
         if(mainView === "npc") {
@@ -23,7 +25,14 @@ const viewModeSelector = selector({
             return "NPCLIST";
         }
 
-        return "SECTOR";
+        if(mainView === "enc") {
+            if(encounter !== null) return "ENCOUNTER";
+            return "ENCOUNTERLIST";
+        }
+
+        
+
+        return "MAIN";
     }
     
 });

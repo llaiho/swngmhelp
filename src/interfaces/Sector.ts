@@ -1,4 +1,4 @@
-import { NonPlayerCharacter } from "./Npc";
+import { Character } from "./Npc";
 
 export type Uuid = string;
 
@@ -14,6 +14,7 @@ export interface OldSector {
 
 export interface Sector {
     id: Uuid;
+    firebaseId?: string;
     name: string;
     stars: Uuid[];
     hexes: Uuid[],
@@ -24,16 +25,18 @@ export interface Sector {
 
 export interface FullSector {
     id: Uuid;
+    firebaseId?: string;
     name: string;
     stars: StarSystem[];
     hexes: Hex[],
     rings: number;
     density: string;
-    npcs: NonPlayerCharacter[];
+    npcs: Character[];
 }
 
 export interface StarSystem {
     id: Uuid;
+    firebaseId?: string;
     name: string;
     position: [number, number, number?];
     inHex?: string;
@@ -49,6 +52,7 @@ export interface StarSystem {
 
 export interface FullStarSystem {
     id: Uuid;
+    firebaseId?: string;
     name: string;
     position: [number, number, number?];
     inHex?: string;
@@ -64,6 +68,7 @@ export interface FullStarSystem {
 
 export interface Hex {
     id: Uuid;
+    firebaseId?: string;
     x: number;
     y: number;
     z: number;

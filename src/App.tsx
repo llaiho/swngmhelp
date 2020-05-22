@@ -24,11 +24,16 @@ const theme = createMuiTheme({
 });
 
 function App() {
+
+    
+
+    
+
     return (
         <div className="App">
             <ThemeProvider theme={theme}>
                 <Recoil.RecoilRoot>
-                    <Header></Header>
+                    
                     <RootView />
                 </Recoil.RecoilRoot>
             </ThemeProvider>

@@ -22,23 +22,3 @@ body {
   left: 0;
   width: 100%;
 }
-
-
-.App > header {
-  height: 4rem;
-  text-align: center;
-  font-size: 2rem;
-}
-
-
-.App > img.logo {
-  width: 250px;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-
-  border-top-left-radius: 40px 40px;
-
-  box-shadow: 0 0 1rem 0.25rem rgba(0,0,0,0.2);
-  z-index: 0;
-}

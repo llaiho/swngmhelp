@@ -1,63 +1,14 @@
-import { NonPlayerCharacter } from "../interfaces/Npc";
+import { NonPlayerCharacterTemplate } from "../interfaces/Npc";
 import { getSkill } from "./Skills";
 
-const NPCTemplates: NonPlayerCharacter[] = [
+const NPCTemplates: NonPlayerCharacterTemplate[] = [
     {
-        id: "",
-        name: "Random Human Male Citizen",
-        description: "A random person from the street.",
+        templateName: "Random Young Adult Human Male",
+        age: {min: 18, max: 28},
         gender: "Male",
-        age: 25,
-        possessions: [],
-        
-        motivation: {
-            defaultDealOutcome: "",
-            initialManner: "",
-            hook: "",
-            motivation: "",
-            power: "",
-            want :""
-        },
-        
-        attributes: {
-            str: 11,
-            dex: 10,
-            con: 11,
-            int: 10,
-            wis: 10,
-            cha: 10
-        },
-        skills: [
-            getSkill("Work", 1),
-        ]
     },
-    {
-        id: "",
-        name: "Random Human Female Citizen",
-        description: "A random person from the street.",
-        gender: "Female",
-        age: 25,
-        possessions: [],
-        motivation: {
-            defaultDealOutcome: "",
-            initialManner: "",
-            hook: "",
-            motivation: "",
-            power: "",
-            want :""
-        },
-        attributes: {
-            str: 10,
-            dex: 11,
-            con: 10,
-            int: 10,
-            wis: 10,
-            cha: 11
-        },
-        skills: [
-            getSkill("Work", 1),
-        ]
-    }
+    
+        
 ];
 
 export default NPCTemplates;

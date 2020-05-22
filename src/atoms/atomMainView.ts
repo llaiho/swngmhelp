@@ -2,7 +2,7 @@ import { atom } from "../utils/Recoil";
 
 const atomMainView = atom({
     key: 'mainView',
-    default: "map"          // map, npc, 
+    default: "main"          // main, map, npc, enc
 });
 
 

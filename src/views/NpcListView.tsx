@@ -6,7 +6,7 @@ import { Container, Input, TextField, Card, IconButton } from "@material-ui/core
 import { useRecoilState, useRecoilValue } from "../utils/Recoil";
 
 import { Sector, FullSector } from "../interfaces/Sector";
-import { NonPlayerCharacter, Skill } from "../interfaces/Npc";
+import { Character, Skill, NonPlayerCharacterTemplate } from "../interfaces/Npc";
 
 import sectorAtom from "../atoms/atomSector";
 
@@ -16,15 +16,22 @@ import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import EditIcon from "@material-ui/icons/Edit";
 import SettingsIcon from "@material-ui/icons/Settings";
 
-import { randomNpcGenerator } from "../generators/npcGenerators";
+import { randomNpcGenerator, overlayTemplateToNpc } from "../generators/npcGenerators";
 import useKeyValueListStyle from "../styles/useKeyValueListStyle";
 
-import atomNpcSelection from '../atoms/atomNpcSelection';
- 
+import atomNpcSelection from "../atoms/atomNpcSelection";
+
 import "./data-view.scss";
 import AttributeContainer from "../components/AttributeContainer";
 import FullSectorSelector from "../selectors/FullSector";
 import npcAtoms from "../atoms/npcAtoms";
+
+
+import { rollDice, rollDicePool } from "../utils/dice";
+// Die testing
+
+console.log("DIE TEST", rollDicePool( ["d20", "d8+2"] ) );
+
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -58,6 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
             position: "relative",
             padding: "0.5rem",
             marginBottom: theme.spacing(1),
+            
             "& > div.actions": {
                 position: "absolute",
                 top: 0,
@@ -88,14 +96,17 @@ const useStyles = makeStyles((theme: Theme) =>
                 "& > small": {
                     fontSize: "0.75rem",
                     fontWeight: "bold",
-                    "&.positive":{
-                        color: "#88FF88"
+                    "&.positive": {
+                        color: "#88FF88",
                     },
-                    "&.negative":{
-                        color: "#FF8888"
-                    }
-                }
-            }
+                    "&.negative": {
+                        color: "#FF8888",
+                    },
+                },
+            },
+            "&.template": {
+                backgroundColor: theme.palette.grey[600],
+            },
         },
         wrapper: {
             display: "flex",
@@ -121,14 +132,13 @@ const useStyles = makeStyles((theme: Theme) =>
             "&.psychic": {
                 color: "purple",
             },
-        }
+        },
     })
 );
 
 const NpcListView: FC = () => {
-    
     const sector = useRecoilValue<FullSector>(FullSectorSelector);
-    const [npcSelected, setNpcSelected] = useRecoilState<NonPlayerCharacter|null>(atomNpcSelection);
+    const [npcSelected, setNpcSelected] = useRecoilState<Character | null>(atomNpcSelection);
 
     const [npcs, setNpcs] = useRecoilState(npcAtoms);
     const [searchKey, setSearchKey] = useState("");
@@ -136,20 +146,17 @@ const NpcListView: FC = () => {
 
     function generateRandomNpc() {
         const npc = randomNpcGenerator();
-        
-        setNpcs((oldNpcs: NonPlayerCharacter[]) => [
-            ...oldNpcs,
-            npc
-        ]);
 
-        // const ns: Sector = { ...sector };
-        // const npcs = [...ns.npcs];
-        // npcs.push(npc);
-        // ns.npcs = npcs;
-        // setSector(ns);
+        setNpcs((oldNpcs: Character[]) => [...oldNpcs, npc]);
     }
 
-    function openNpcEditor(type: string, npc: NonPlayerCharacter) {
+    function createNpcFromTemplate(action: string, npcTemplate: NonPlayerCharacterTemplate) {
+        console.log("From template", npcTemplate);
+        const npc = overlayTemplateToNpc(randomNpcGenerator(), npcTemplate);
+        setNpcs((oldNpcs: Character[]) => [...oldNpcs, npc]);
+    }
+
+    function openNpcEditor(type: string, npc: Character) {
         setNpcSelected(npc);
     }
 
@@ -160,7 +167,7 @@ const NpcListView: FC = () => {
 
     const activeNpcs =
         searchKey.length > 0
-            ? npcs.filter((n: NonPlayerCharacter) => {
+            ? npcs.filter((n: Character) => {
                   if (n.name.includes(searchKey)) return true;
                   if (n.gender.includes(searchKey)) return true;
                   if (n.description.includes(searchKey)) return true;
@@ -180,7 +187,7 @@ const NpcListView: FC = () => {
 
             <h4 className={classes.partHeader}>Current NPCs</h4>
             {activeNpcs.length === 0 && <p style={{ color: "white" }}>No curent NPCs in the sector.</p>}
-            {activeNpcs.map((npc: NonPlayerCharacter) => {
+            {activeNpcs.map((npc: Character) => {
                 const title: string = `${npc.name}, ${npc.gender}, ${npc.age} years old`;
                 return <NpcCard npc={npc} key={npc.id} title={title} actionIcon="edit" action={openNpcEditor} />;
             })}
@@ -198,16 +205,16 @@ const NpcListView: FC = () => {
                 </div>
             </Card>
 
-            {NPCTemplates.map((npc: NonPlayerCharacter) => (
-                <NpcCard npc={npc} key={npc.name} />
+            {NPCTemplates.map((npc: NonPlayerCharacterTemplate) => (
+                <NpcTemplateCard npc={npc} key={npc.templateName} action={createNpcFromTemplate} />
             ))}
         </Container>
     );
 };
 
 interface NpcCardProps {
-    npc: NonPlayerCharacter;
-    action?: (type: string, npc: NonPlayerCharacter) => void;
+    npc: Character;
+    action?: (type: string, npc: Character) => void;
     actionIcon?: string;
     title?: string;
 }
@@ -252,7 +259,6 @@ const NpcCard: FC<NpcCardProps> = (props: NpcCardProps) => {
                     <>
                         <h5>Attributes</h5>
                         <p>
-                            
                             <AttributeContainer name="STR" value={npc.attributes.str} />
                             <AttributeContainer name="DEX" value={npc.attributes.dex} />
                             <AttributeContainer name="CON" value={npc.attributes.con} />
@@ -299,6 +305,56 @@ const NpcCard: FC<NpcCardProps> = (props: NpcCardProps) => {
                         </div>
                     </>
                 )}
+            </div>
+        </Card>
+    );
+};
+
+interface NpcTemplateCardProps {
+    npc: NonPlayerCharacterTemplate;
+    action?: (type: string, npc: NonPlayerCharacterTemplate) => void;
+    actionIcon?: string;
+    title?: string;
+}
+
+const NpcTemplateCard: FC<NpcTemplateCardProps> = (props: NpcTemplateCardProps) => {
+    const classes = useStyles();
+
+    const [detailsOpen, setDetailState] = useState(false);
+    const listStyle = useKeyValueListStyle();
+
+    function toggleDetails() {
+        setDetailState((prev) => !prev);
+    }
+
+
+    const npc = props.npc;
+
+    function actionHandler(e: React.SyntheticEvent) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (props.action) {
+            props.action(props.actionIcon || "default", npc);
+        }
+    }
+
+    
+
+    return (
+        <Card classes={{ root: classes.card }} className="template" onClick={toggleDetails}>
+            <p>
+                <b>{props.title || npc.templateName}</b>
+            </p>
+            {props.action && (
+                <div className="actions">
+                    <IconButton onClick={actionHandler}>
+                        {props.actionIcon ? <EditIcon /> : <PersonAddIcon />}
+                    </IconButton>
+                </div>
+            )}
+
+            <div className={`details ${detailsOpen ? "open" : ""}`}>
+                <p>{npc.description}</p>
             </div>
         </Card>
     );

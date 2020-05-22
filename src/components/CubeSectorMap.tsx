@@ -50,6 +50,7 @@ const CubeSectorMap: FC = () => {
         return null;
     }
 
+    console.log("Full Sector", sector);
     return (
         <>
             <SectorMapControls />

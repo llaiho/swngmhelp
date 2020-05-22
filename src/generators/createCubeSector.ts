@@ -1,5 +1,5 @@
 import { Sector, Hex, StarSystem } from "../interfaces/Sector";
-import { rnd, arnds } from "../utils/randUtils";
+import { rnd, arnds, arnd } from "../utils/randUtils";
 import { v4 as uuidv4, v4 } from 'uuid';
 import createStarSystem from "./createStarSystem";
 import { axialToCube } from "../utils/hexUtils";
@@ -12,9 +12,12 @@ interface createSectorOptions {
 
 const createSector = (options: createSectorOptions): [Sector, Hex[], StarSystem[]] => {
 
+    const wa = ["Alpha", "Beta", "Gamma", "Omega", "Delta", "Tiberian", "Arturian", "Collian", "Tommian", "Common", "Thomanian", "Targrave", "Theolan", "Ember", "Draugrist", "Nergal", "Gwildor", "Luma", "Ember", "Chtli", "Tohar"];
+    const wb = ["Sector", "Quadrant", "Branch", "Region", "District", "Zone", "Quarter", "Galaxy", "Pocket"];
+
     const sector: Sector = {
         id: v4(),
-        name: "",
+        name: `${arnd(wa)} ${arnd(wb)}`,
         stars: [],
         hexes: [],
         rings: options.rings || 4,
