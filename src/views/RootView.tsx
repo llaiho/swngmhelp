@@ -1,63 +1,81 @@
-import React, { FC, useEffect } from "react";
+import React, { FC } from "react";
 
-import { Sector, FullSector } from "../interfaces/Sector";
 
-import sectorAtom from "../atoms/atomSector";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "../utils/Recoil";
+import { useRecoilValue } from "../utils/Recoil";
 import viewModeSelector from "../atoms/viewModeSelector";
 import SystemView from "./SystemView";
-import CubeSectorMap from "../components/CubeSectorMap";
-import createSector from "../generators/createCubeSector";
+
+
 
 import NpcListView from "./NpcListView";
 import NpcView from "./NpcView";
-import FullSectorSelector from "../selectors/FullSector";
-import hexAtoms from "../atoms/hexAtoms";
-import starSystemAtoms from "../atoms/starSystemAtoms";
 import EncountersView from "./EncountersView";
 import EncounterView from "./EncounterView";
 import { useFirebase } from "../firebase/init";
-import { Container, CircularProgress } from "@material-ui/core";
+import { Container, CircularProgress, makeStyles, Theme, createStyles, Icon } from "@material-ui/core";
 import MainPage from "./MainPage";
 import Header from "./Header";
+import SectorView from "./SectorView";
+import Title from "../components/Title";
+import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 
+
+const useStyles = makeStyles((theme: Theme) => createStyles({
+    loader: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        "& > *": {
+            margin: "1rem 0",
+        },
+        "& > h1": {
+            fontFamily: "Teko",
+            fontWeight: 500,
+            fontSize: "3rem",
+            color: theme.palette.primary.dark,
+            textShadow: "1px 1px 2px rgba(255,255,255,0.8), -1px 1px 2px rgba(255,255,255,0.8), -1px -1px 2px rgba(255,255,255,0.8), 1px -1px 2px rgba(255,255,255,0.8)"
+        },
+    },
+    spinner: {
+        position: "relative",
+    },
+    icon: {
+        position: "absolute",
+        top: "calc(50% - 6rem)",
+        left: "calc(50% - 6rem)",
+        width: "auto",
+        height: "auto",
+        transform: "rotate(35deg)",
+        "& svg": {
+            fontSize: "12rem",
+            color: theme.palette.primary.dark
+        }
+    }
+}));
 
 const RootView: FC = () => {
     const viewMode = useRecoilValue(viewModeSelector);
-    // const fullSector = useRecoilValue<FullSector>(FullSectorSelector);
-    // const setSector = useSetRecoilState(sectorAtom);
-    // const setHexes = useSetRecoilState(hexAtoms);
-    // const setStarSystems = useSetRecoilState(starSystemAtoms);
+    const classes = useStyles();
 
     const initializing = useFirebase();
 
-    // useEffect(() => {
-    //     if (fullSector === null) {
-    //         const [newSector, hexes, starSystems] = createSector({
-    //             density: "normal",
-    //             rings: 6,
-    //         });
-    //         setHexes(hexes);
-    //         setStarSystems(starSystems);
-    //         setSector(newSector);
-    //     }
-    // }, [fullSector, setSector, setHexes, setStarSystems]);
-
-    // if (fullSector === null) {
-    //     return null;
-    // }
-
     if (initializing) {
         return (
-            <Container>
-                <h1>Loading Firebase...</h1>
-                <CircularProgress size={300} />
+            <Container classes={{root: classes.loader}}>
+                <Title size="lg" />
+                <div className={classes.spinner}>
+                    <CircularProgress size={300} color="primary" />
+                    <Icon color="primary" classes={{root: classes.icon}}><HourglassEmptyIcon /></Icon>
+                </div>
+                
+                <h1>Loading database...</h1>
             </Container>
         );
     }
 
     let ContentView = MainPage;
-    let showHeaders = true;
 
     console.log("VIEWMODE", viewMode);
     switch (viewMode) {
@@ -77,7 +95,7 @@ const RootView: FC = () => {
             ContentView = EncounterView;
             break;
         case "SECTOR":
-            ContentView = CubeSectorMap;
+            ContentView = SectorView;
             break;
         case "MAIN":
         default:
