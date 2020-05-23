@@ -1,4 +1,5 @@
 import { Uuid } from "./Sector";
+import { FirebaseStorable } from "./Firebase";
 
 export interface randomRange {
     min: number;
@@ -40,7 +41,7 @@ export interface NonPlayerCharacterTemplate {
 
 }
 
-export interface Character {
+export interface Character extends FirebaseStorable {
     id: Uuid;
     
     firebaseId?: string;

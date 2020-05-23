@@ -1,4 +1,5 @@
 import { Character } from "./Npc";
+import { FirebaseStorable } from "./Firebase";
 
 export type Uuid = string;
 
@@ -12,9 +13,8 @@ export interface OldSector {
 }
 
 
-export interface Sector {
+export interface Sector extends FirebaseStorable {
     id: Uuid;
-    firebaseId?: string;
     name: string;
     stars: Uuid[];
     hexes: Uuid[],
@@ -34,9 +34,8 @@ export interface FullSector {
     npcs: Character[];
 }
 
-export interface StarSystem {
+export interface StarSystem extends FirebaseStorable {
     id: Uuid;
-    firebaseId?: string;
     name: string;
     position: [number, number, number?];
     inHex?: string;
@@ -66,9 +65,8 @@ export interface FullStarSystem {
     POIs: PointOfInterest[];
 }
 
-export interface Hex {
+export interface Hex extends FirebaseStorable {
     id: Uuid;
-    firebaseId?: string;
     x: number;
     y: number;
     z: number;

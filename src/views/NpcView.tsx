@@ -20,9 +20,6 @@ import atomNpcSelection from "../atoms/atomNpcSelection";
 import { Character, Attributes, Skill, NpcMotivation } from "../interfaces/Npc";
 
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import DoneOutlineIcon from "@material-ui/icons/DoneOutline";
-import SaveIcon from "@material-ui/icons/Save";
-import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import CancelIcon from "@material-ui/icons/Cancel";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import CasinoIcon from "@material-ui/icons/Casino";
@@ -56,6 +53,7 @@ import EditableNumber from "../components/EditableNumber";
 import CharacterAttributes from "./cards/CharacterAttributes";
 import CharacterSkills from "./cards/CharacterSkills";
 import { insertOrUpdateCharacter } from "../firebase/apiCharacters";
+import FabSave from "../components/FabSave";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -276,34 +274,21 @@ const NpcView: FC = () => {
 
     function save() {
         if (npc !== null) {
-            
-
             // setEdited(false);
             setSaving(true);
 
-
-            if(npc.firebaseId === undefined) {
-                insertOrUpdateCharacter(npc).then((ids: [string, string]) => {
-
-                    
-                    setNpcs((oldNpcs: Character[]) => {
-                        
-                        
-                        const newNpcs = [...oldNpcs];
-                        const npcIndex = newNpcs.findIndex((n: Character) => n && n.id === npc.id);
-                        const newNpc = {...npc, firebaseId: ids[0]};
-                        newNpcs.splice(npcIndex, 1, newNpc);
-                        return newNpcs;
-                    });
-
-                    setSaving(false);
-                    setEdited(false)
-                    
+            insertOrUpdateCharacter(npc).then((ids: [string, string]) => {
+                setNpcs((oldNpcs: Character[]) => {
+                    const newNpcs = [...oldNpcs];
+                    const npcIndex = newNpcs.findIndex((n: Character) => n && n.id === npc.id);
+                    const newNpc = { ...npc, firebaseId: ids[0] };
+                    newNpcs.splice(npcIndex, 1, newNpc);
+                    return newNpcs;
                 });
-            }
 
-            
-
+                setSaving(false);
+                setEdited(false);
+            });
         }
     }
 
@@ -638,42 +623,6 @@ const NpcView: FC = () => {
 
             <h4 className={classes.partHeader}>Other Info</h4>
         </Container>
-    );
-};
-
-interface FabSaveProps {
-    deactivated: boolean;
-    saving: boolean;
-    onClick: () => void;
-}
-
-
-const useFabStyle = makeStyles((theme: Theme) => createStyles({
-    fabWrap: {
-        position: "relative",
-        margin: theme.spacing(1),
-    },
-    fabProgress: {
-        color: "green",
-        position: 'absolute',
-        top: -6,
-        left: -6,
-        zIndex: 1,
-      },
-}))
-
-const FabSave: FC<FabSaveProps> = (props: FabSaveProps) => {
-
-    const classes = useFabStyle();
-
-    const statusIcon = props.saving ? <HourglassEmptyIcon /> : props.deactivated ? <DoneOutlineIcon /> : <SaveIcon />;
-    return (
-        <span className={classes.fabWrap}>
-            <Fab onClick={props.onClick} color="primary" disabled={props.deactivated || props.saving}>
-                {statusIcon}
-            </Fab>
-            {props.saving && <CircularProgress size={68} className={classes.fabProgress} />}
-        </span>
     );
 };
 

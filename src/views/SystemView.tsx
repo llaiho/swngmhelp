@@ -76,6 +76,7 @@ const SystemView: FC = () => {
         setSystem(null);
     }
     
+    
     if(system === null) {
         return null;
     }

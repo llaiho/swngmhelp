@@ -15,8 +15,6 @@ const FullSectorSelector = selector({
         const systems = get(starSystemAtoms);
         const npcs = get(npcAtoms);
 
-        console.log("HEXES", hexes);
-        console.log("SYSTEMS", systems);
         if(sector === null) {
             return null;
         }
@@ -28,7 +26,6 @@ const FullSectorSelector = selector({
             rings: sector.rings,
             hexes: sector.hexes.map((id: Uuid):Hex => {
                 const hex: Hex = hexes.find((h: Hex) => h.id === id);
-                console.log(id, hex, hexes[0]);
                 return hex;
             }),
             stars: sector.stars.map((id: Uuid): StarSystem => {
