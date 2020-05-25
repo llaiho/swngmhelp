@@ -9,6 +9,7 @@ import {
     Population,
     Planet,
     FullSector,
+    HexStore,
 } from "../interfaces/Sector";
 
 import systemAtom from "../atoms/atomSystem";
@@ -80,6 +81,20 @@ const SectorView: FC = () => {
         async function saving() {
             const stored: string[] = [];
             try {
+                // Save Hexes in a single json
+
+                const hexStore: HexStore = {
+                    id: sector.hexFBId || "",
+                    sectorId: sector.id,
+                    hexes: sector.hexes.map((h: Hex) => {
+                        return h;
+                    }),
+                };
+                if(sector.hexFBId) {
+                    hexStore.firebaseId = sector.hexFBId;
+                }
+                const hexIds = await insertOrUpdateHex(hexStore);
+
                 // Save StarSystems
                 for (let s = 0; s < sector.stars.length - 1; s++) {
                     const star: StarSystem = sector.stars[s];
@@ -89,16 +104,9 @@ const SectorView: FC = () => {
                     stored.push(`STAR: ${star.id} DONE`);
                 }
 
-                // Save Hexes
-                for (let h = 0; h < sector.hexes.length - 1; h++) {
-                    const hex: Hex = sector.hexes[h];
-                    stored.push(`HEX: ${hex.id} SAVING`);
-                    await insertOrUpdateHex(hex);
-                    stored.push(`HEX: ${hex.id} DONE`);
-                }
-
                 const simpleSector: Sector = {
                     ...sector,
+                    hexFBId: hexIds[0],
                     hexes: sector.hexes.map((h: Hex) => h.id),
                     stars: sector.stars.map((s: StarSystem) => s.id),
                     npcs: [],

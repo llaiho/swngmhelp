@@ -2,7 +2,7 @@ import React, { FC, useState } from "react";
 import { Container, Grid, makeStyles, Theme, createStyles, Card, Icon, ButtonGroup, Button, Slider } from "@material-ui/core";
 import { useRecoilValue, useRecoilState, useSetRecoilState } from "../utils/Recoil";
 import sectorAtoms from "../atoms/sectorAtoms";
-import { Sector, Hex, StarSystem } from "../interfaces/Sector";
+import { Sector, Hex, StarSystem, HexStore, FullSector } from "../interfaces/Sector";
 
 import AddIcon from "@material-ui/icons/Add";
 
@@ -17,6 +17,8 @@ import atomMainView from "../atoms/atomMainView";
 
 import CloudDoneIcon from '@material-ui/icons/CloudDone';
 import Title from "../components/Title";
+import { getAllHexes, getHex } from "../firebase/apiHex";
+import { getAllStarSystems } from "../firebase/apiStarSystem";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -50,6 +52,11 @@ const useStyles = makeStyles((theme: Theme) =>
             opacity: 0.75,
             transition: "all 0.3s ease-out",
             boxShadow: "inset 0 0 2rem 0.5rem rgba(0,0,0,0.2), 0 0 0.5rem 0.2rem black",
+            "& > span.cloudIcon": {
+                position: "absolute",
+                bottom: "1rem",
+                right: "1rem",
+            },
             "&:hover": {
                 opacity: 0.9,
                 backgroundColor: theme.palette.primary.dark,
@@ -79,6 +86,7 @@ const useStyles = makeStyles((theme: Theme) =>
                 width: "90%",
                 left: "5%",
             },
+            
             
         },
         addIcon: {
@@ -139,8 +147,43 @@ const MainPage: FC = () => {
 
     function loadSector(sec: Sector) {
         console.log("LOAD SECTOR", sec);
-        selectSector(sec);
-        setMainView("map");
+
+
+        async function loadSector(sec: Sector) {
+
+            const tSec: Sector = {...sec, stars: [], hexes: [] };
+            const nSec: FullSector = tSec as FullSector;
+
+            // Load hexStore
+            if(sec.hexFBId) {
+                const hexStore:HexStore|undefined = await getHex(sec.hexFBId);
+                if(!hexStore) {
+                    console.error(`Could not load hexes for sector ${sec.name} with id ${sec.hexFBId}`);
+                    return;
+                }
+                nSec.hexes = hexStore.hexes;
+                nSec.hexFBId = hexStore.firebaseId;
+            } else {
+                console.error(`No hex store defined for sector ${sec.name}`);
+                return;
+            }
+
+            const starSystems: StarSystem[] = await getAllStarSystems();
+            nSec.stars = starSystems.filter((s: StarSystem) => {
+                return sec.stars.includes(s.id);
+            });
+
+
+            // Load starSystems
+            
+
+            // selectSector(sec);
+            // setMainView("map");
+        }
+
+
+        
+        loadSector(sec);
         
 
     }
@@ -235,5 +278,30 @@ const MainPage: FC = () => {
         </Container>
     );
 };
+
+
+async function loadFullSector(sec: Sector) {
+
+    
+    // Load hexStore
+    if(sec.hexFBId) {
+        const hexStore:HexStore|undefined = await getHex(sec.hexFBId);
+        if(!hexStore) {
+            console.error(`Could not load hexes for sector ${sec.name} with id ${sec.hexFBId}`);
+            return;
+        }
+        nSec.hexes = hexStore.hexes;
+        nSec.hexFBId = hexStore.firebaseId;
+    } else {
+        console.error(`No hex store defined for sector ${sec.name}`);
+        return;
+    }
+
+    const starSystems: StarSystem[] = await getAllStarSystems();
+    nSec.stars = starSystems.filter((s: StarSystem) => {
+        return sec.stars.includes(s.id);
+    });
+
+}
 
 export default MainPage;

@@ -16,6 +16,7 @@
     "@types/uuid": "^7.0.3",
     "faker": "^4.1.0",
     "firebase": "^7.14.5",
+    "jokits-react": "^0.3.0",
     "node-sass": "^4.14.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

@@ -18,6 +18,7 @@ export interface Sector extends FirebaseStorable {
     name: string;
     stars: Uuid[];
     hexes: Uuid[],
+    hexFBId?: string;
     rings: number;
     density: string;
     npcs: Uuid[];
@@ -26,6 +27,7 @@ export interface Sector extends FirebaseStorable {
 export interface FullSector {
     id: Uuid;
     firebaseId?: string;
+    hexFBId?: string;
     name: string;
     stars: StarSystem[];
     hexes: Hex[],
@@ -72,6 +74,11 @@ export interface Hex extends FirebaseStorable {
     z: number;
     type?: string;
     
+}
+
+export interface HexStore extends FirebaseStorable {
+    sectorId: Uuid;
+    hexes: any[];           // For firebase storing purposes
 }
 
 
