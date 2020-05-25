@@ -6179,17 +6179,15 @@ jest@24.9.0:
     import-local "^2.0.0"
     jest-cli "^24.9.0"
 
-jokits-react@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/jokits-react/-/jokits-react-0.3.0.tgz#58f6059c375dcd0bcd962bf3868448154e72633d"
-  integrity sha512-2EzcN+FkXarQ2e18WFEdLsG+ZQwO6qVft7ONbgzI1L/MC+9QLO3cSboNopOmqc3+UnwlPSthoYOgIVflGiByyg==
-  dependencies:
-    jokits "^0.3.1"
+jokits-react@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/jokits-react/-/jokits-react-0.4.0.tgz#db4ce3da7372ea9fd6698ccac616d852cecdadff"
+  integrity sha512-ZVxBBi/opAF3k0M+pYR6XSZSX9tiuV3aLVKSloAHBHgxf2dWI/Ac38IXQzIuUBtZNezUbsPw5X1TQJfACC28fA==
 
-jokits@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/jokits/-/jokits-0.3.1.tgz#c71b0414bd85b62b5c6607bb9d79f2e4eacad495"
-  integrity sha512-ikwMfIOUpXG+6xtiFEPAOA5WYaI5S2eki2W/i2PWjo7gfrdmR59hpSYVJuZcirwmupgJMmCI4f3U1tj4zIyw+Q==
+jokits@^0.3.5:
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/jokits/-/jokits-0.3.5.tgz#a764fdcc4069bc31028e212cd948ae196961ea8d"
+  integrity sha512-ngR/CaEQgIV6xIdUH9R9+6lAmWhp0hohtZ56FQGPmN2lszZ6rDWNE8hPH5Hvt+WBBBNODCZtzHwmkQhx+dlnJw==
 
 js-base64@^2.1.8:
   version "2.5.2"

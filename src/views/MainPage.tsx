@@ -151,27 +151,27 @@ const MainPage: FC = () => {
 
         async function loadSector(sec: Sector) {
 
-            const tSec: Sector = {...sec, stars: [], hexes: [] };
-            const nSec: FullSector = tSec as FullSector;
+            // const tSec: Sector = {...sec, stars: [], hexes: [] };
+            // const nSec: FullSector = tSec as FullSector;
 
-            // Load hexStore
-            if(sec.hexFBId) {
-                const hexStore:HexStore|undefined = await getHex(sec.hexFBId);
-                if(!hexStore) {
-                    console.error(`Could not load hexes for sector ${sec.name} with id ${sec.hexFBId}`);
-                    return;
-                }
-                nSec.hexes = hexStore.hexes;
-                nSec.hexFBId = hexStore.firebaseId;
-            } else {
-                console.error(`No hex store defined for sector ${sec.name}`);
-                return;
-            }
+            // // Load hexStore
+            // if(sec.hexFBId) {
+            //     const hexStore:HexStore|undefined = await getHex(sec.hexFBId);
+            //     if(!hexStore) {
+            //         console.error(`Could not load hexes for sector ${sec.name} with id ${sec.hexFBId}`);
+            //         return;
+            //     }
+            //     nSec.hexes = hexStore.hexes;
+            //     nSec.hexFBId = hexStore.firebaseId;
+            // } else {
+            //     console.error(`No hex store defined for sector ${sec.name}`);
+            //     return;
+            // }
 
-            const starSystems: StarSystem[] = await getAllStarSystems();
-            nSec.stars = starSystems.filter((s: StarSystem) => {
-                return sec.stars.includes(s.id);
-            });
+            // const starSystems: StarSystem[] = await getAllStarSystems();
+            // nSec.stars = starSystems.filter((s: StarSystem) => {
+            //     return sec.stars.includes(s.id);
+            // });
 
 
             // Load starSystems
@@ -283,24 +283,24 @@ const MainPage: FC = () => {
 async function loadFullSector(sec: Sector) {
 
     
-    // Load hexStore
-    if(sec.hexFBId) {
-        const hexStore:HexStore|undefined = await getHex(sec.hexFBId);
-        if(!hexStore) {
-            console.error(`Could not load hexes for sector ${sec.name} with id ${sec.hexFBId}`);
-            return;
-        }
-        nSec.hexes = hexStore.hexes;
-        nSec.hexFBId = hexStore.firebaseId;
-    } else {
-        console.error(`No hex store defined for sector ${sec.name}`);
-        return;
-    }
+    // // Load hexStore
+    // if(sec.hexFBId) {
+    //     const hexStore:HexStore|undefined = await getHex(sec.hexFBId);
+    //     if(!hexStore) {
+    //         console.error(`Could not load hexes for sector ${sec.name} with id ${sec.hexFBId}`);
+    //         return;
+    //     }
+    //     nSec.hexes = hexStore.hexes;
+    //     nSec.hexFBId = hexStore.firebaseId;
+    // } else {
+    //     console.error(`No hex store defined for sector ${sec.name}`);
+    //     return;
+    // }
 
-    const starSystems: StarSystem[] = await getAllStarSystems();
-    nSec.stars = starSystems.filter((s: StarSystem) => {
-        return sec.stars.includes(s.id);
-    });
+    // const starSystems: StarSystem[] = await getAllStarSystems();
+    // nSec.stars = starSystems.filter((s: StarSystem) => {
+    //     return sec.stars.includes(s.id);
+    // });
 
 }
 
