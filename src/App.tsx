@@ -6,8 +6,6 @@ import RootView from "./views/RootView";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import { stateLogic } from "./logic/stateLogic";
 
-const Recoil = require("recoil");
-
 const theme = createMuiTheme({
     palette: {
         type: "dark",
@@ -29,9 +27,7 @@ function App() {
     return (
         <div className="App">
             <ThemeProvider theme={theme}>
-                <Recoil.RecoilRoot>
-                    <RootView />
-                </Recoil.RecoilRoot>
+                <RootView />
             </ThemeProvider>
         </div>
     );
