@@ -15,7 +15,7 @@ export async function getAllCharacters() {
 
     const characters: Character[] = [];
     snap.forEach((doc) => {
-        console.log("DOC", doc.id, doc.data());
+        // console.log("DOC", doc.id, doc.data());
 
         try {
             const chr: Character = doc.data() as Character;

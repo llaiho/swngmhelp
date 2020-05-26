@@ -1,24 +1,28 @@
 import React, { FC, useState } from "react";
-import { Container, Grid, makeStyles, Theme, createStyles, Card, Icon, ButtonGroup, Button, Slider } from "@material-ui/core";
-import { useRecoilValue, useRecoilState, useSetRecoilState } from "../utils/Recoil";
-import sectorAtoms from "../atoms/sectorAtoms";
+import {
+    Container,
+    Grid,
+    makeStyles,
+    Theme,
+    createStyles,
+    Card,
+    Icon,
+    ButtonGroup,
+    Button,
+    Slider,
+} from "@material-ui/core";
 import { Sector, Hex, StarSystem, HexStore, FullSector } from "../interfaces/Sector";
 
 import AddIcon from "@material-ui/icons/Add";
 
 import logo from "./swncover.png";
 import createSector from "../generators/createCubeSector";
-import hexAtoms from "../atoms/hexAtoms";
-import starSystemAtoms from "../atoms/starSystemAtoms";
-import sectorAtom from "../atoms/atomSector";
-import LabelValue from '../components/LabelValue';
-import atomMainView from "../atoms/atomMainView";
 
-
-import CloudDoneIcon from '@material-ui/icons/CloudDone';
+import CloudDoneIcon from "@material-ui/icons/CloudDone";
 import Title from "../components/Title";
-import { getAllHexes, getHex } from "../firebase/apiHex";
-import { getAllStarSystems } from "../firebase/apiStarSystem";
+import { useService, useAtom, joki } from "jokits-react";
+import { useChangeSelectedSector } from "../hooks/useSelectedSector";
+import LabelValue from "../components/LabelValue";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -78,7 +82,7 @@ const useStyles = makeStyles((theme: Theme) =>
                 opacity: 0.9,
                 "&:hover": {
                     backgroundColor: theme.palette.background.paper,
-                }
+                },
             },
             "& > button": {
                 position: "absolute",
@@ -86,8 +90,6 @@ const useStyles = makeStyles((theme: Theme) =>
                 width: "90%",
                 left: "5%",
             },
-            
-            
         },
         addIcon: {
             display: "block",
@@ -98,12 +100,12 @@ const useStyles = makeStyles((theme: Theme) =>
                 color: theme.palette.primary.main,
             },
         },
-       
+
         logo: {
             height: "10rem",
         },
         slider: {
-            padding: "1rem 0.25rem"    
+            padding: "1rem 0.25rem",
         },
         partHeader: {
             margin: "2rem 0 0.5rem 0.5rem",
@@ -117,94 +119,39 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-const ringsToText: string[] = [
-    "single",
-    "mini",
-    "Tiny",
-    "Small",
-    "Normal",
-    "Large",
-    "Huge"
-];
-
+const ringsToText: string[] = ["single", "mini", "Tiny", "Small", "Normal", "Large", "Huge"];
 
 const MainPage: FC = () => {
-    const [sectors, setSectors] = useRecoilState<Sector[]>(sectorAtoms);
-    const setHexes = useSetRecoilState<Hex[]>(hexAtoms);
-    const setStars = useSetRecoilState<StarSystem[]>(starSystemAtoms);
+    const [sectors, send] = useService("SectorService", "React:MainPage");
 
-    const selectSector = useSetRecoilState<Sector>(sectorAtom);
-    const [mainView, setMainView] = useRecoilState<string>(atomMainView);
+    const setSelectedSector = useChangeSelectedSector();
 
     const classes = useStyles();
-    const densityNumToString: ("normal"|"dense"|"low")[] = [
-        "low",
-        "normal",
-        "dense"
-    ];
+
     const [density, setDensity] = useState<number>(2);
     const [size, setSize] = useState<number>(4);
 
+    const densityNumToString: ("normal" | "dense" | "low")[] = ["low", "normal", "dense"];
+
     function loadSector(sec: Sector) {
-        console.log("LOAD SECTOR", sec);
-
-
-        async function loadSector(sec: Sector) {
-
-            const tSec: Sector = {...sec, stars: [], hexes: [] };
-            const nSec: FullSector = tSec as FullSector;
-
-            // Load hexStore
-            if(sec.hexFBId) {
-                const hexStore:HexStore|undefined = await getHex(sec.hexFBId);
-                if(!hexStore) {
-                    console.error(`Could not load hexes for sector ${sec.name} with id ${sec.hexFBId}`);
-                    return;
-                }
-                nSec.hexes = hexStore.hexes;
-                nSec.hexFBId = hexStore.firebaseId;
-            } else {
-                console.error(`No hex store defined for sector ${sec.name}`);
-                return;
-            }
-
-            const starSystems: StarSystem[] = await getAllStarSystems();
-            nSec.stars = starSystems.filter((s: StarSystem) => {
-                return sec.stars.includes(s.id);
-            });
-
-
-            // Load starSystems
-            
-
-            // selectSector(sec);
-            // setMainView("map");
-        }
-
-
-        
-        loadSector(sec);
-        
-
+        setSelectedSector(sec);
     }
 
     function newSector() {
-        console.log(density, size);
-        const [sec, hexes, stars] = createSector({
-            density: densityNumToString[density-1],
-            rings: size
-        });
-        console.log(sec, hexes, stars);
-        
-        setHexes((prev :Hex[]) => [...prev, ...hexes]);
-        setStars((prev: StarSystem[]) => [...prev, ...stars]);
-        setSectors((prev: Sector[]) => [...prev, sec]);
+        const sectorOpts = {
+            density: densityNumToString[density - 1],
+            rings: size,
+        };
+        send("create", sectorOpts);
+    }
+
+    if (!Array.isArray(sectors)) {
+        return <p>Sectors is not an array</p>;
     }
 
     return (
         <Container>
             <header className={classes.header}>
-               
                 <Title size="md" />
 
                 <h1>Gamemaster help tool</h1>
@@ -219,19 +166,24 @@ const MainPage: FC = () => {
                                 <h1>{sec.name}</h1>
                                 <LabelValue label="Stars" value={sec.stars.length} />
                                 <LabelValue label="Size" value={ringsToText[sec.rings]} />
-                                <LabelValue label="Density" value={`${Math.round((sec.stars.length / sec.hexes.length)*100)}%`} />
+                                <LabelValue
+                                    label="Density"
+                                    value={`${Math.round((sec.stars.length / sec.hexes.length) * 100)}%`}
+                                />
 
                                 <LabelValue label="Characters" value={sec.npcs.length} />
-                                
-                                {sec.firebaseId && <Icon className="cloudIcon"><CloudDoneIcon /></Icon>}
 
+                                {sec.firebaseId && (
+                                    <Icon className="cloudIcon">
+                                        <CloudDoneIcon />
+                                    </Icon>
+                                )}
                             </Card>
                         </Grid>
                     );
                 })}
                 <Grid item xs={3}>
-                    <Card classes={{ root: classes.sector }} className="newSector" >
-
+                    <Card classes={{ root: classes.sector }} className="newSector">
                         <h2>Star System Density</h2>
                         <Slider
                             value={density}
@@ -239,15 +191,15 @@ const MainPage: FC = () => {
                             step={1}
                             onChange={(e: any, val: number | number[]) => setDensity(val as number)}
                             marks={[
-                                {value: 1, label: "Low"},
-                                {value: 2, label: "Medium"},
-                                {value: 3, label: "High"}
+                                { value: 1, label: "Low" },
+                                { value: 2, label: "Medium" },
+                                { value: 3, label: "High" },
                             ]}
                             min={1}
                             max={3}
                             valueLabelDisplay="auto"
                         ></Slider>
-                        
+
                         <h2>Galaxy Size</h2>
                         <Slider
                             value={size}
@@ -255,53 +207,28 @@ const MainPage: FC = () => {
                             onChange={(e: any, val: number | number[]) => setSize(val as number)}
                             step={1}
                             marks={[
-                                {value: 2, label: "Tiny"},
-                                {value: 3, label: "Small"},
-                                {value: 4, label: "Medium"},
-                                {value: 5, label: "Large"},
-                                {value: 6, label: "Huge"}
+                                { value: 2, label: "Tiny" },
+                                { value: 3, label: "Small" },
+                                { value: 4, label: "Medium" },
+                                { value: 5, label: "Large" },
+                                { value: 6, label: "Huge" },
                             ]}
                             min={2}
                             max={6}
                         ></Slider>
 
-                        
-                        
                         {/* <Icon classes={{ root: classes.addIcon }}>
                             <AddIcon />
                         </Icon> */}
-                        
-                        <Button startIcon={<AddIcon />} onClick={newSector} variant="contained" color="primary">New Sector</Button>
+
+                        <Button startIcon={<AddIcon />} onClick={newSector} variant="contained" color="primary">
+                            New Sector
+                        </Button>
                     </Card>
                 </Grid>
             </Grid>
         </Container>
     );
 };
-
-
-async function loadFullSector(sec: Sector) {
-
-    
-    // Load hexStore
-    if(sec.hexFBId) {
-        const hexStore:HexStore|undefined = await getHex(sec.hexFBId);
-        if(!hexStore) {
-            console.error(`Could not load hexes for sector ${sec.name} with id ${sec.hexFBId}`);
-            return;
-        }
-        nSec.hexes = hexStore.hexes;
-        nSec.hexFBId = hexStore.firebaseId;
-    } else {
-        console.error(`No hex store defined for sector ${sec.name}`);
-        return;
-    }
-
-    const starSystems: StarSystem[] = await getAllStarSystems();
-    nSec.stars = starSystems.filter((s: StarSystem) => {
-        return sec.stars.includes(s.id);
-    });
-
-}
 
 export default MainPage;

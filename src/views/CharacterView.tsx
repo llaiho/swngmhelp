@@ -3,7 +3,6 @@ import faker from "faker";
 
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 
-import { useRecoilState, useSetRecoilState } from "../utils/Recoil";
 import {
     Container,
     Card,
@@ -16,7 +15,7 @@ import {
     CircularProgress,
     Fab,
 } from "@material-ui/core";
-import atomNpcSelection from "../atoms/atomNpcSelection";
+
 import { Character, Attributes, Skill, NpcMotivation } from "../interfaces/Npc";
 
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
@@ -27,11 +26,9 @@ import CasinoIcon from "@material-ui/icons/Casino";
 import AttributeContainer from "../components/AttributeContainer";
 import useKeyValueListStyle from "../styles/useKeyValueListStyle";
 
-import "./data-view.scss";
 import SKILLS from "../data/Skills";
 import { MANNERS, MOTIVATION, WANT, POWER, HOOK, OUTCOME } from "../generators/npcGenerators";
 import TextInput from "../components/TextInput";
-import npcAtoms from "../atoms/npcAtoms";
 import { arnd } from "../utils/randUtils";
 
 import {
@@ -54,6 +51,10 @@ import CharacterAttributes from "./cards/CharacterAttributes";
 import CharacterSkills from "./cards/CharacterSkills";
 import { insertOrUpdateCharacter } from "../firebase/apiCharacters";
 import FabSave from "../components/FabSave";
+import { useAtomValue, trigger } from "jokits-react";
+import useSelectedCharacter from "../hooks/useSelectedCharacter";
+
+import "./data-view.scss";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -246,49 +247,52 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-const NpcView: FC = () => {
-    const [npc, setNpcSelected] = useRecoilState<Character | null>(atomNpcSelection);
+const CharacterView: FC = () => {
+    const [character, setCharacter] = useState<Character | undefined>(undefined);
+
+    const [selectedCharacter, selectCharacter] = useSelectedCharacter();
+
     const [edited, setEdited] = useState(false);
     const [oldNpc, setOldNpc] = useState<Character | null>(null);
 
     const [saving, setSaving] = useState<boolean>(false);
-
-    const setNpcs = useSetRecoilState<Character[]>(npcAtoms);
 
     const classes = useStyles();
     const listStyle = useKeyValueListStyle();
 
     useEffect(() => {
         if (oldNpc === null) {
-            setOldNpc(npc);
+            if (character !== undefined) {
+                setOldNpc(character);
+            }
         } else {
-            if (oldNpc !== npc) {
+            if (oldNpc !== character) {
                 setEdited(true);
             }
         }
-    }, [oldNpc, npc]);
+    }, [oldNpc, character]);
+
+    useEffect(() => {
+        setCharacter(selectedCharacter);
+    }, [selectedCharacter]);
 
     function back() {
-        setNpcSelected(null);
+        // setNpcSelected(null);
+        selectCharacter(undefined);
     }
 
     function save() {
-        if (npc !== null) {
+        if (character !== undefined) {
             // setEdited(false);
             setSaving(true);
-
-            insertOrUpdateCharacter(npc).then((ids: [string, string]) => {
-                setNpcs((oldNpcs: Character[]) => {
-                    const newNpcs = [...oldNpcs];
-                    const npcIndex = newNpcs.findIndex((n: Character) => n && n.id === npc.id);
-                    const newNpc = { ...npc, firebaseId: ids[0] };
-                    newNpcs.splice(npcIndex, 1, newNpc);
-                    return newNpcs;
-                });
-
-                setSaving(false);
-                setEdited(false);
+            selectCharacter(character);
+            trigger({
+                from: "React:CharacterView",
+                action: "set",
+                data: character,
             });
+            setSaving(false);
+            setEdited(false);
         }
     }
 
@@ -298,8 +302,8 @@ const NpcView: FC = () => {
     }
 
     function editAttributes(name: string, value: number) {
-        if (npc?.attributes) {
-            const attrs: Attributes = { ...npc?.attributes } as Attributes;
+        if (character?.attributes) {
+            const attrs: Attributes = { ...character?.attributes } as Attributes;
 
             if (name === "Strength") attrs.str = value;
             if (name === "Dexterity") attrs.dex = value;
@@ -308,16 +312,16 @@ const NpcView: FC = () => {
             if (name === "Wisdom") attrs.wis = value;
             if (name === "Charisma") attrs.cha = value;
 
-            const nnpc: Character = { ...npc } as Character;
+            const nnpc: Character = { ...character } as Character;
             nnpc.attributes = attrs;
-            setNpcSelected(nnpc);
+            setCharacter(nnpc);
             setEdited(true);
         }
     }
 
     function editMotivation(type: string, value: string) {
-        if (npc && npc.motivation) {
-            const nnpc: Character = { ...npc } as Character;
+        if (character && character.motivation) {
+            const nnpc: Character = { ...character } as Character;
             const mot: NpcMotivation = { ...nnpc.motivation };
             if (type === "initialManner") mot.initialManner = value;
             if (type === "hook") mot.hook = value;
@@ -327,7 +331,7 @@ const NpcView: FC = () => {
             if (type === "defaultDealOutcome") mot.defaultDealOutcome = value;
 
             nnpc.motivation = mot;
-            setNpcSelected(nnpc);
+            setCharacter(nnpc);
             setEdited(true);
         }
     }
@@ -338,8 +342,8 @@ const NpcView: FC = () => {
         // if (key === "description") nnpc.description = value;
         // if (key === "name") nnpc.name = value;
 
-        setNpcSelected((prevState: Character | null) => {
-            if (prevState !== null) {
+        setCharacter((prevState: Character | undefined) => {
+            if (prevState !== undefined) {
                 const nState: Character = { ...prevState };
 
                 if (key === "name") {
@@ -351,15 +355,15 @@ const NpcView: FC = () => {
 
                 return nState;
             }
-            return null;
+            return undefined;
         });
         setEdited(true);
     }
 
     function editMainNumberDate(key: keyof Character, value: number) {
         console.log("EDIT NUMBER", key, value);
-        setNpcSelected((prevState: Character | null) => {
-            if (prevState !== null) {
+        setCharacter((prevState: Character | undefined) => {
+            if (prevState !== undefined) {
                 const nState: Character = { ...prevState };
 
                 console.log(`Current value of ${key} is ${nState[key]}`);
@@ -368,7 +372,7 @@ const NpcView: FC = () => {
 
                 return nState;
             }
-            return null;
+            return undefined;
         });
         setEdited(true);
     }
@@ -377,7 +381,7 @@ const NpcView: FC = () => {
         faker.locale = arnd(["en", "fr", "ru", "pl", "nl", "tr", "es", "de", "ge"]);
         let newName = "";
 
-        if (npc !== null && npc.gender === "Male") {
+        if (character !== undefined && character.gender === "Male") {
             newName = `${faker.name.firstName(0)} ${faker.name.lastName(0)}`;
         } else {
             newName = `${faker.name.firstName(1)} ${faker.name.lastName(1)}`;
@@ -388,14 +392,14 @@ const NpcView: FC = () => {
 
     function updateCharacter(character: Character): void {
         console.log("Update character", character);
-        setNpcSelected(character);
+        setCharacter(character);
     }
 
-    if (npc === null) {
+    if (!character) {
         return null;
     }
 
-    const hpRange = getHpRange(npc);
+    const hpRange = getHpRange(character);
     return (
         <Container className="data-view">
             <header className={classes.header}>
@@ -403,7 +407,7 @@ const NpcView: FC = () => {
                     Back
                 </Button>
                 <TextInput
-                    value={npc.name}
+                    value={character.name}
                     onDataSave={editMainStringData}
                     dataKey="name"
                     clickToEdit={true}
@@ -428,19 +432,19 @@ const NpcView: FC = () => {
             </header>
 
             <h4 className={classes.partHeader}>Attributes</h4>
-            <CharacterAttributes character={npc} setCharacter={setNpcSelected} />
+            <CharacterAttributes character={character} updateCharacter={updateCharacter} />
 
             <h4 className={classes.partHeader}>Skills</h4>
 
-            <CharacterSkills character={npc} setCharacter={setNpcSelected} />
+            <CharacterSkills character={character} updateCharacter={updateCharacter} />
 
             <h4 className={classes.partHeader}>Combat Data</h4>
             <Card classes={{ root: classes.card }}>
                 <Grid container direction="row" justify="space-around" alignItems="center">
                     <Grid item>
                         <h3>
-                            Hitpoints: <big>{npc.hitpoints}</big>{" "}
-                            <IconButton onClick={() => editMainNumberDate("hitpoints", rollHitpoints(npc))}>
+                            Hitpoints: <big>{character.hitpoints}</big>{" "}
+                            <IconButton onClick={() => editMainNumberDate("hitpoints", rollHitpoints(character))}>
                                 <CasinoIcon />
                             </IconButton>
                             <small className="helpText">
@@ -448,13 +452,13 @@ const NpcView: FC = () => {
                             </small>
                         </h3>
                     </Grid>
-                    {characterIsNpc(npc) && (
+                    {characterIsNpc(character) && (
                         <Grid item>
                             <h3>
                                 Hit Dice (d8)
                                 <big>
                                     <EditableNumber
-                                        value={npc.hitDice}
+                                        value={character.hitDice}
                                         onEdit={(k: string, val: number) =>
                                             editMainNumberDate(k as keyof Character, val)
                                         }
@@ -464,10 +468,11 @@ const NpcView: FC = () => {
                             </h3>
                         </Grid>
                     )}
-                    {!characterIsNpc(npc) && (
+                    {!characterIsNpc(character) && (
                         <Grid item>
                             <h3>
-                                {npc.charClass} (d6{characterIsWarrior(npc) ? "+2" : ""}): <big>{npc.level}</big>
+                                {character.charClass} (d6{characterIsWarrior(character) ? "+2" : ""}):{" "}
+                                <big>{character.level}</big>
                             </h3>
                         </Grid>
                     )}
@@ -477,7 +482,7 @@ const NpcView: FC = () => {
                             Armour Class:{" "}
                             <big>
                                 <EditableNumber
-                                    value={npc.armourClass}
+                                    value={character.armourClass}
                                     onEdit={(k: string, val: number) => editMainNumberDate(k as keyof Character, val)}
                                     name="armourClass"
                                 />
@@ -486,21 +491,21 @@ const NpcView: FC = () => {
                     </Grid>
                     <Grid item>
                         <h3>
-                            Base Attack Bonus: <big>{getBaseAttackBonus(npc)}</big>
+                            Base Attack Bonus: <big>{getBaseAttackBonus(character)}</big>
                         </h3>
                     </Grid>
 
                     <Grid item>
-                        <LabelValue label="Punch" value={getPunchAttackBonus(npc)} />
-                        <LabelValue label="Stab" value={getStabAttackBonus(npc)} />
-                        <LabelValue label="Shoot" value={getShootAttackBonus(npc)} />
-                        <LabelValue label="Pilot" value={getPilotAttackBonus(npc)} />
+                        <LabelValue label="Punch" value={getPunchAttackBonus(character)} />
+                        <LabelValue label="Stab" value={getStabAttackBonus(character)} />
+                        <LabelValue label="Shoot" value={getShootAttackBonus(character)} />
+                        <LabelValue label="Pilot" value={getPilotAttackBonus(character)} />
                     </Grid>
                 </Grid>
             </Card>
 
             <h4 className={classes.partHeader}>Class Information</h4>
-            <CharacterClassCard character={npc} setCharacter={setNpcSelected} />
+            <CharacterClassCard character={character} updateCharacter={updateCharacter} />
 
             <h4 className={classes.partHeader}>Personality & Motivations & Description</h4>
             <Card classes={{ root: classes.card }}>
@@ -511,7 +516,7 @@ const NpcView: FC = () => {
                             <Select
                                 classes={{ root: classes.select }}
                                 id="npc-motivation-manner"
-                                value={npc.motivation.initialManner}
+                                value={character.motivation.initialManner}
                                 onChange={(e: any) => editMotivation("initialManner", e.target.value)}
                             >
                                 {MANNERS.map((m: string) => (
@@ -526,7 +531,7 @@ const NpcView: FC = () => {
                             <Select
                                 classes={{ root: classes.select }}
                                 id="npc-motivation-motivation"
-                                value={npc.motivation.motivation}
+                                value={character.motivation.motivation}
                                 onChange={(e: any) => editMotivation("motivation", e.target.value)}
                             >
                                 {MOTIVATION.map((m: string) => (
@@ -543,7 +548,7 @@ const NpcView: FC = () => {
                             <Select
                                 classes={{ root: classes.select }}
                                 id="npc-motivation-want"
-                                value={npc.motivation.want}
+                                value={character.motivation.want}
                                 onChange={(e: any) => editMotivation("want", e.target.value)}
                             >
                                 {WANT.map((m: string) => (
@@ -558,7 +563,7 @@ const NpcView: FC = () => {
                             <Select
                                 classes={{ root: classes.select }}
                                 id="npc-motivation-power"
-                                value={npc.motivation.power}
+                                value={character.motivation.power}
                                 onChange={(e: any) => editMotivation("power", e.target.value)}
                             >
                                 {POWER.map((m: string) => (
@@ -575,7 +580,7 @@ const NpcView: FC = () => {
                             <Select
                                 classes={{ root: classes.select }}
                                 id="npc-motivation-hook"
-                                value={npc.motivation.hook}
+                                value={character.motivation.hook}
                                 onChange={(e: any) => editMotivation("hook", e.target.value)}
                             >
                                 {HOOK.map((m: string) => (
@@ -590,7 +595,7 @@ const NpcView: FC = () => {
                             <Select
                                 classes={{ root: classes.select }}
                                 id="npc-motivation-defaultDealOutcome"
-                                value={npc.motivation.defaultDealOutcome}
+                                value={character.motivation.defaultDealOutcome}
                                 onChange={(e: any) => editMotivation("defaultDealOutcome", e.target.value)}
                             >
                                 {OUTCOME.map((m: string) => (
@@ -606,7 +611,7 @@ const NpcView: FC = () => {
                 <div className={classes.padder}>
                     <TextInput
                         dataKey="description"
-                        value={npc.description}
+                        value={character.description}
                         label="Description & Notes"
                         onDataSave={editMainStringData}
                         rows={3}
@@ -626,4 +631,4 @@ const NpcView: FC = () => {
     );
 };
 
-export default NpcView;
+export default CharacterView;

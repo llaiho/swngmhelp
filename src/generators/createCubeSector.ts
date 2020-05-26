@@ -5,14 +5,14 @@ import createStarSystem from "./createStarSystem";
 import { axialToCube } from "../utils/hexUtils";
 
 
-interface createSectorOptions {
+export interface CreateSectorOptions {
     density?: "low" | "normal" | "dense";
     rings?: number;
 }
 
-const createSector = (options: createSectorOptions): [Sector, Hex[], StarSystem[]] => {
+const createSector = (options: CreateSectorOptions): [Sector, Hex[], StarSystem[]] => {
 
-    const wa = ["Alpha", "Beta", "Gamma", "Omega", "Delta", "Tiberian", "Arturian", "Collian", "Tommian", "Common", "Thomanian", "Targrave", "Theolan", "Ember", "Draugrist", "Nergal", "Gwildor", "Luma", "Ember", "Chtli", "Tohar"];
+    const wa = ["Alpha", "Beta", "Gamma", "Omega", "Delta", "Tiberian", "Arturian", "Collian", "Tommian", "Common", "Thomanian", "Targrave", "Theolan", "Ember", "Draugrist", "Nergal", "Gwildor", "Luma", "Ember", "Chtli", "Tohar", "Llaihoan"];
     const wb = ["Sector", "Quadrant", "Branch", "Region", "District", "Zone", "Quarter", "Galaxy", "Pocket"];
 
     const sector: Sector = {
@@ -37,7 +37,7 @@ const createSector = (options: createSectorOptions): [Sector, Hex[], StarSystem[
         }
     }
 
-    sector.hexes = hexes.map((h: Hex) => h.id);
+    sector.hexes = hexes;
 
     const hexCount = sector.hexes.length;
     
@@ -65,7 +65,7 @@ const createSector = (options: createSectorOptions): [Sector, Hex[], StarSystem[
         starSystems.push(star);
     });
 
-    sector.stars = starSystems.map((s: StarSystem) => s.id);
+    sector.stars = starSystems;
     
     return [sector, hexes, starSystems];
 

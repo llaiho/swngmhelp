@@ -3,11 +3,6 @@ import React, { FC, useState, useEffect } from "react";
 import { Encounter } from "../interfaces/Encounter";
 import { Uuid } from "../interfaces/Sector";
 
-import encounterAtoms from "../atoms/encounterAtoms";
-import encounterSelectAtom from "../atoms/encounterSelectAtom";
-
-import { useRecoilState, useSetRecoilState, useRecoilValue } from "../utils/Recoil";
-import EncounterSelector from "../selectors/EncounterSelector";
 import { makeStyles, Theme, createStyles, Grid } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -26,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
             margin: "0 auto",
             width: "1000px",
             height: "1000px",
-            
+
             "& .board-grid-container": {
                 height: "100%",
                 width: "100%",
@@ -37,34 +32,33 @@ const useStyles = makeStyles((theme: Theme) =>
                     border: "solid 2px rgba(255,255,255,0.2)",
                     "&:hover": {
                         border: "solid 2px rgba(128,128,255,0.5)",
-                    }
-                }
-            }
-        }
+                    },
+                },
+            },
+        },
     })
 );
 
 const EncounterView: FC = () => {
     const classes = useStyles();
-    const encounter = useRecoilValue<Encounter | null>(EncounterSelector);
+    const encounter: Encounter|undefined = undefined;
 
-    if (encounter === null) {
+    if (encounter === undefined) {
         return null;
     }
+    return null;
 
-    return (
-        <div className={classes.encounterView}>
-            <header className={classes.header}>
-                <h1>{encounter.name}</h1>
-            </header>
+    // return (
+    //     <div className={classes.encounterView}>
+    //         <header className={classes.header}>
+    //             <h1>{encounter.name}</h1>
+    //         </header>
 
-
-            <div className={classes.board}>
-                <BoardGrid />
-            </div>
-            
-        </div>
-    );
+    //         <div className={classes.board}>
+    //             <BoardGrid />
+    //         </div>
+    //     </div>
+    // );
 };
 
 interface GridCell {

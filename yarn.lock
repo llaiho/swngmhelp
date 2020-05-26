@@ -6179,17 +6179,15 @@ jest@24.9.0:
     import-local "^2.0.0"
     jest-cli "^24.9.0"
 
-jokits-react@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/jokits-react/-/jokits-react-0.3.0.tgz#58f6059c375dcd0bcd962bf3868448154e72633d"
-  integrity sha512-2EzcN+FkXarQ2e18WFEdLsG+ZQwO6qVft7ONbgzI1L/MC+9QLO3cSboNopOmqc3+UnwlPSthoYOgIVflGiByyg==
-  dependencies:
-    jokits "^0.3.1"
+jokits-react@^0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/jokits-react/-/jokits-react-0.4.4.tgz#474844aa3007c4fef10e797d2d1d6186d63faaf2"
+  integrity sha512-3X/1NJSXlu1bIZ9XIrmwlXnIYGfBoPc0dXSYXdn8QjoKyt4oUq/OULyMnoUYWMxzD83oukFsa3djHAvAOKclmw==
 
-jokits@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/jokits/-/jokits-0.3.1.tgz#c71b0414bd85b62b5c6607bb9d79f2e4eacad495"
-  integrity sha512-ikwMfIOUpXG+6xtiFEPAOA5WYaI5S2eki2W/i2PWjo7gfrdmR59hpSYVJuZcirwmupgJMmCI4f3U1tj4zIyw+Q==
+jokits@^0.3.7:
+  version "0.3.7"
+  resolved "https://registry.yarnpkg.com/jokits/-/jokits-0.3.7.tgz#35ae8b56e1758139e12fb22ca9b0ca555b9b1ee4"
+  integrity sha512-YEI2CpR4BYsxQpwTEEW07Fr+IilPndhiKLqgfpnDIXli4dKU4C6OEoC1FoBgch4ijPPkjuavOmv5L7aMfA/9Jg==
 
 js-base64@^2.1.8:
   version "2.5.2"
@@ -8741,10 +8739,6 @@ realpath-native@^1.1.0:
   resolved "https://registry.yarnpkg.com/realpath-native/-/realpath-native-1.1.0.tgz#2003294fea23fb0672f2476ebe22fcf498a2d65c"
   dependencies:
     util.promisify "^1.0.0"
-
-recoil@^0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/recoil/-/recoil-0.0.7.tgz#197066ac0a983e4728f5973033bbe5b40a277d40"
 
 recursive-readdir@2.2.2:
   version "2.2.2"

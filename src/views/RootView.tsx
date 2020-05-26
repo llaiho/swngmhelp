@@ -1,92 +1,46 @@
 import React, { FC } from "react";
+import { useJokiStateValue, useAtomValue } from "jokits-react";
 
-
-import { useRecoilValue } from "../utils/Recoil";
-import viewModeSelector from "../atoms/viewModeSelector";
 import SystemView from "./SystemView";
-
-
-
-import NpcListView from "./NpcListView";
-import NpcView from "./NpcView";
+import CharacterListView from "./CharacterListView";
+import CharacterView from "./CharacterView";
 import EncountersView from "./EncountersView";
 import EncounterView from "./EncounterView";
-import { useFirebase } from "../firebase/init";
-import { Container, CircularProgress, makeStyles, Theme, createStyles, Icon } from "@material-ui/core";
 import MainPage from "./MainPage";
 import Header from "./Header";
 import SectorView from "./SectorView";
-import Title from "../components/Title";
-import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
+import LoadingView from "./LoadingView";
+import { useSelectedCharacterValue } from "../hooks/useSelectedCharacter";
+import { useSelectedStarSystemValue } from "../hooks/useSelectedSystem";
+import { useSelectedSectorValue } from "../hooks/useSelectedSector";
 
-
-const useStyles = makeStyles((theme: Theme) => createStyles({
-    loader: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-        "& > *": {
-            margin: "1rem 0",
-        },
-        "& > h1": {
-            fontFamily: "Teko",
-            fontWeight: 500,
-            fontSize: "3rem",
-            color: theme.palette.primary.dark,
-            textShadow: "1px 1px 2px rgba(255,255,255,0.8), -1px 1px 2px rgba(255,255,255,0.8), -1px -1px 2px rgba(255,255,255,0.8), 1px -1px 2px rgba(255,255,255,0.8)"
-        },
-    },
-    spinner: {
-        position: "relative",
-    },
-    icon: {
-        position: "absolute",
-        top: "calc(50% - 6rem)",
-        left: "calc(50% - 6rem)",
-        width: "auto",
-        height: "auto",
-        transform: "rotate(35deg)",
-        "& svg": {
-            fontSize: "12rem",
-            color: theme.palette.primary.dark
-        }
-    }
-}));
+// import { useFirebase } from "../firebase/init";
 
 const RootView: FC = () => {
-    const viewMode = useRecoilValue(viewModeSelector);
-    const classes = useStyles();
+    const state = useJokiStateValue();
 
-    const initializing = useFirebase();
+    // const viewMode: string|undefined = useAtomValue("ViewMode", "MAIN");
 
-    if (initializing) {
-        return (
-            <Container classes={{root: classes.loader}}>
-                <Title size="lg" />
-                <div className={classes.spinner}>
-                    <CircularProgress size={300} color="primary" />
-                    <Icon color="primary" classes={{root: classes.icon}}><HourglassEmptyIcon /></Icon>
-                </div>
-                
-                <h1>Loading database...</h1>
-            </Container>
-        );
+    const viewMode: string = useGetCurrentView();
+
+    // Loading screen
+    if (!state || state === "init") {
+        return <LoadingView />;
     }
 
     let ContentView = MainPage;
 
-    console.log("VIEWMODE", viewMode);
+    console.log("RootView: ViewMode: ", viewMode);
+
     switch (viewMode) {
         case "SYSTEM":
             ContentView = SystemView;
             break;
-        case "NPCLIST":
-            ContentView = NpcListView;
+        case "CHARACTERS":
+            ContentView = CharacterListView;
             break;
-        case "NPCVIEW":
-            ContentView = NpcView;
+        case "CHARACTER":
+            ContentView = CharacterView;
             break;
         case "ENCOUNTERLIST":
             ContentView = EncountersView;
@@ -99,17 +53,40 @@ const RootView: FC = () => {
             break;
         case "MAIN":
         default:
-            return <MainPage />
-            
+            return <MainPage />;
     }
-
 
     return (
         <>
-        <Header></Header>
-        <ContentView />
+            <Header></Header>
+            <ContentView />
         </>
-    )
+    );
 };
+
+export function useGetCurrentView(): string {
+    const viewMode = useAtomValue<string>("ViewMode", "main");
+
+    const selectedChar = useSelectedCharacterValue();
+    const selectedSystem = useSelectedStarSystemValue();
+    const selectedSector = useSelectedSectorValue();
+
+    console.log("useGetCurrentView:", viewMode, "\nsystem:", selectedSystem, "\nsector:", selectedSector);
+
+    switch (viewMode) {
+        case "map":
+            if (selectedSystem) return "SYSTEM";
+            if (!selectedSector) return "MAIN";
+            return "SECTOR";
+        case "character":
+            if (selectedChar) return "CHARACTER";
+            return "CHARACTERS";
+        case "main":
+            if(selectedSector) return "SECTOR";
+            return "MAIN";
+        default:
+            return "MAIN";
+    }
+}
 
 export default RootView;
