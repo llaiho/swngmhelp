@@ -94,24 +94,21 @@ function begin() {
 }
 
 async function initialize() {
-
     try {
-    console.log("Start Initialization process");
-    const initProcess = createProcess("ServiceInitializationProcess");
+        console.log("Start Initialization process");
+        const initProcess = createProcess("ServiceInitializationProcess");
 
-    const servicesInitialized = await initProcess.startProcess();
+        const servicesInitialized = await initProcess.startProcess();
 
-    console.log("Initialization Process Done", servicesInitialized);
-    
-    const st = joki.state.get();
+        console.log("Initialization Process Done", servicesInitialized);
 
-    // Initialize interceptors
-    initInterceptors();
+        const st = joki.state.get();
 
-    st.next && st.next();
-    
-    return;
-    } catch(e) {
+        // Initialize interceptors
+        initInterceptors();
 
-    }
+        st.next && st.next();
+
+        return;
+    } catch (e) {}
 }

@@ -11,24 +11,15 @@ import {
     Button,
     Slider,
 } from "@material-ui/core";
-import { useRecoilValue, useRecoilState, useSetRecoilState } from "../utils/Recoil";
-import sectorAtoms from "../atoms/sectorAtoms";
 import { Sector, Hex, StarSystem, HexStore, FullSector } from "../interfaces/Sector";
 
 import AddIcon from "@material-ui/icons/Add";
 
 import logo from "./swncover.png";
 import createSector from "../generators/createCubeSector";
-import hexAtoms from "../atoms/hexAtoms";
-import starSystemAtoms from "../atoms/starSystemAtoms";
-import sectorAtom from "../atoms/atomSector";
-import LabelValue from "../components/LabelValue";
-import atomMainView from "../atoms/atomMainView";
 
 import CloudDoneIcon from "@material-ui/icons/CloudDone";
 import Title from "../components/Title";
-import { getAllHexes, getHex } from "../firebase/apiHex";
-import { getAllStarSystems } from "../firebase/apiStarSystem";
 import { useService, useAtom, joki } from "jokits-react";
 import { useChangeSelectedSector } from "../hooks/useSelectedSector";
 
