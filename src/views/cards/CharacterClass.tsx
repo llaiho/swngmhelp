@@ -1,10 +1,8 @@
 import React, { FC } from "react";
 import CharacterCardProps from "./CharacterCardProps";
 import { Character } from "../../interfaces/Npc";
-import { makeStyles, createStyles, Card, ButtonGroup, Button, Grid } from "@material-ui/core";
+import { Card, ButtonGroup, Button, Grid } from "@material-ui/core";
 import useCardStyles from "./useCardStyle";
-import atomNpcSelection from "../../atoms/atomNpcSelection";
-import { useRecoilState } from "../../utils/Recoil";
 import LabelValue from "../../components/LabelValue";
 import EditableNumber from "../../components/EditableNumber";
 import DeleteIcon from "@material-ui/icons/Delete";

@@ -3,12 +3,8 @@ import React, { FC, useState } from "react";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import { Container, Input, TextField, Card, IconButton } from "@material-ui/core";
 
-import { useRecoilState, useRecoilValue } from "../utils/Recoil";
-
 import { Sector, FullSector } from "../interfaces/Sector";
 import { Character, Skill, NonPlayerCharacterTemplate } from "../interfaces/Npc";
-
-import sectorAtom from "../atoms/atomSector";
 
 import NPCTemplates from "../data/npcTemplates";
 
@@ -19,16 +15,13 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import { randomNpcGenerator, overlayTemplateToNpc } from "../generators/npcGenerators";
 import useKeyValueListStyle from "../styles/useKeyValueListStyle";
 
-import atomNpcSelection from "../atoms/atomNpcSelection";
-
-import "./data-view.scss";
 import AttributeContainer from "../components/AttributeContainer";
-import FullSectorSelector from "../selectors/FullSector";
-import npcAtoms from "../atoms/npcAtoms";
 
 import { rollDice, rollDicePool } from "../utils/dice";
 import { useService, trigger } from "jokits-react";
 import useSelectedCharacter, { useChangeSelectedCharacter } from "../hooks/useSelectedCharacter";
+
+import "./data-view.scss";
 // Die testing
 
 // console.log("DIE TEST", rollDicePool( ["d20", "d8+2"] ) );
@@ -137,7 +130,6 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const CharacterListView: FC = () => {
-    
     const [npcs, send] = useService<Character[]>("CharacterService");
 
     const selectCharacter = useChangeSelectedCharacter();

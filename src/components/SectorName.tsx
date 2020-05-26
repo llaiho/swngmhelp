@@ -1,7 +1,6 @@
 import React, { FC, useState, useEffect } from "react";
-import sectorAtom from "../atoms/atomSector";
+
 import { Sector } from "../interfaces/Sector";
-import { useRecoilValue, useRecoilState } from "../utils/Recoil";
 import { makeStyles, createStyles, Input, TextField } from "@material-ui/core";
 import { useAtomValue } from "jokits-react";
 

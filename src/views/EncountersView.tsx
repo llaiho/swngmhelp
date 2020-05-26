@@ -5,32 +5,47 @@ import { v4 } from "uuid";
 import { Encounter } from "../interfaces/Encounter";
 import { Uuid } from "../interfaces/Sector";
 
-import { useRecoilState, useSetRecoilState } from "../utils/Recoil";
-
-import encounterAtoms from "../atoms/encounterAtoms";
-import encounterSelectAtom from "../atoms/encounterSelectAtom";
-
 import useListViewStyles from "./useListViewStyle";
 
 import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from "@material-ui/icons/Delete";
 
 import "./data-view.scss";
 import { arnd } from "../utils/randUtils";
 
-
-
 const EncountersView: FC = () => {
-    const [encounters, setEncounters] = useRecoilState<Encounter[]>(encounterAtoms);
+    // const [encounters, setEncounters] = useRecoilState<Encounter[]>(encounterAtoms);
 
-    const setEncounter = useSetRecoilState<Uuid>(encounterSelectAtom);
+    const encounters: Encounter[] = [];
+    // const setEncounter = useSetRecoilState<Uuid>(encounterSelectAtom);
 
     const classes = useListViewStyles();
 
     function createEncounter() {
-
-        const wordA = ["Operation", "Mission of", "Encounter", "Battle of", "Plan", "Interruption", "Design", "Campaign", "War of"];
-        const wordB = ["shiny", "dark", "light", "Cyber", "massive", "divine", "alpha", "beta", "omega", "furious", "terror"];
+        const wordA = [
+            "Operation",
+            "Mission of",
+            "Encounter",
+            "Battle of",
+            "Plan",
+            "Interruption",
+            "Design",
+            "Campaign",
+            "War of",
+        ];
+        const wordB = [
+            "shiny",
+            "dark",
+            "light",
+            "Cyber",
+            "massive",
+            "divine",
+            "alpha",
+            "beta",
+            "omega",
+            "furious",
+            "terror",
+        ];
         const wordC = ["rose", "tower", "club", "number", "book", "wasp", "tree", "cave", "shades", "moon"];
         const enc: Encounter = {
             id: v4(),
@@ -39,17 +54,17 @@ const EncountersView: FC = () => {
             location: "",
             participants: [],
             round: 0,
-            status: "DRAFT"
+            status: "DRAFT",
         };
-        setEncounters((prev) => [...prev, enc]);
+        // setEncounters((prev) => [...prev, enc]);
     }
 
     function deleteEncounter(e: Encounter) {
-        setEncounters(prev => prev.filter((enc: Encounter) => e.id !== enc.id));
+        // setEncounters(prev => prev.filter((enc: Encounter) => e.id !== enc.id));
     }
 
     function selectEncounter(enc: Encounter) {
-        setEncounter(enc.id);
+        // setEncounter(enc.id);
     }
 
     return (

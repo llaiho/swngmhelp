@@ -15,7 +15,7 @@ import {
     CircularProgress,
     Fab,
 } from "@material-ui/core";
-import atomNpcSelection from "../atoms/atomNpcSelection";
+
 import { Character, Attributes, Skill, NpcMotivation } from "../interfaces/Npc";
 
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
@@ -29,7 +29,6 @@ import useKeyValueListStyle from "../styles/useKeyValueListStyle";
 import SKILLS from "../data/Skills";
 import { MANNERS, MOTIVATION, WANT, POWER, HOOK, OUTCOME } from "../generators/npcGenerators";
 import TextInput from "../components/TextInput";
-import npcAtoms from "../atoms/npcAtoms";
 import { arnd } from "../utils/randUtils";
 
 import {
@@ -290,7 +289,7 @@ const CharacterView: FC = () => {
             trigger({
                 from: "React:CharacterView",
                 action: "set",
-                data: character
+                data: character,
             });
             setSaving(false);
             setEdited(false);

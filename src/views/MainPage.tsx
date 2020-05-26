@@ -22,6 +22,7 @@ import CloudDoneIcon from "@material-ui/icons/CloudDone";
 import Title from "../components/Title";
 import { useService, useAtom, joki } from "jokits-react";
 import { useChangeSelectedSector } from "../hooks/useSelectedSector";
+import LabelValue from "../components/LabelValue";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
