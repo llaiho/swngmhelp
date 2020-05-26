@@ -3,7 +3,7 @@ import CharacterCardProps from "./CharacterCardProps";
 import useCardStyles from "./useCardStyle";
 import { Card, Theme, createStyles, Button, Grid, makeStyles } from "@material-ui/core";
 import SKILLS from "../../data/Skills";
-import { Skill } from "../../interfaces/Npc";
+import { Skill, Character } from "../../interfaces/Npc";
 import ExposurePlus1Icon from "@material-ui/icons/ExposurePlus1";
 import ExposureNeg1Icon from "@material-ui/icons/ExposureNeg1";
 import { characterIsPsychic, characterIsNpc } from "../../utils/characterUtils";
@@ -15,19 +15,14 @@ const CharacterSkills: FC<CharacterCardProps> = (props: CharacterCardProps) => {
     const combatSkills = useMemo(() => SKILLS.filter((s: Skill) => s.type === "combat"), []);
     const psychicSkills = useMemo(() => SKILLS.filter((s: Skill) => s.type === "psychic"), []);
 
-    function editSkill(skill: Skill) {
-        props.setCharacter((prev) => {
-            if (prev) {
-                const skills: Skill[] = character.skills.filter((s: Skill) => s.name !== skill.name);
-                skills.push(skill);
-                return { ...prev, skills: skills };
-            }
-
-            return prev;
-        });
-    }
-
     const { character } = props;
+
+    function editSkill(skill: Skill) {
+        const skills: Skill[] = character.skills.filter((s: Skill) => s.name !== skill.name);
+        skills.push(skill);
+
+        props.updateCharacter({ ...props.character, skills: skills });
+    }
 
     const gridSize = 3;
 

@@ -6,11 +6,11 @@ import { Character } from "../interfaces/Npc";
 import sectorAtoms from "../atoms/sectorAtoms";
 import { getAllSectors } from "./apiSector";
 import { Sector } from "../interfaces/Sector";
+import { joki, setJokiState } from "jokits-react";
 
-export default async function initFirebase() {
-    const chars = await getAllCharacters();
-
-    console.log("CHARACTERS", chars);
+export default function initFirebase() {
+    // const chars = await getAllCharacters();
+    // console.log("CHARACTERS", chars);
 }
 
 export function useFirebase() {
@@ -21,17 +21,13 @@ export function useFirebase() {
 
     useEffect(() => {
         async function init() {
-            
             // Load characters (npc:s mainly)
             const chars: Character[] = await getAllCharacters();
             setCharacters(chars);
 
-
             // Load Sectors
             const sectors: Sector[] = await getAllSectors();
             setSectors(sectors);
-                        
-            
 
             setInitializing(false);
         }

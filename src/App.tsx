@@ -3,8 +3,8 @@ import "./App.css";
 
 import RootView from "./views/RootView";
 
-import Header from "./views/Header";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
+import { stateLogic } from "./logic/stateLogic";
 
 const Recoil = require("recoil");
 
@@ -23,17 +23,13 @@ const theme = createMuiTheme({
     },
 });
 
+stateLogic();
+
 function App() {
-
-    
-
-    
-
     return (
         <div className="App">
             <ThemeProvider theme={theme}>
                 <Recoil.RecoilRoot>
-                    
                     <RootView />
                 </Recoil.RecoilRoot>
             </ThemeProvider>

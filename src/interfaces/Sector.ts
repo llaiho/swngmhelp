@@ -16,8 +16,8 @@ export interface OldSector {
 export interface Sector extends FirebaseStorable {
     id: Uuid;
     name: string;
-    stars: Uuid[];
-    hexes: Uuid[],
+    stars: StarSystem[];
+    hexes: Hex[];
     hexFBId?: string;
     rings: number;
     density: string;

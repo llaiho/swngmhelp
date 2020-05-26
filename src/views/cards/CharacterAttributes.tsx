@@ -5,19 +5,13 @@ import AttributeContainer from "../../components/AttributeContainer";
 import useCardStyles from "./useCardStyle";
 import EditableNumber from "../../components/EditableNumber";
 import { getAttributeBonus } from "../../utils/characterUtils";
+import { Character } from "../../interfaces/Npc";
 
 const CharacterAttributes: FC<CharacterCardProps> = (props: CharacterCardProps) => {
     const classes = useCardStyles();
 
     function editAttributes(name: string, value: number) {
-
-        props.setCharacter(prev => {
-            if(prev) {
-                return {...prev, attributes: {...prev.attributes, [name]: value}};
-            }
-            return prev;
-            
-        })
+        props.updateCharacter({...props.character, attributes: {...props.character.attributes, [name]: value}})
     }
 
     const { character } = props;

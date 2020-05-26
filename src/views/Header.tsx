@@ -1,22 +1,17 @@
 import React, { FC } from "react";
-import { makeStyles, createStyles, IconButton, Select, Theme } from "@material-ui/core";
+import { makeStyles, createStyles, IconButton, Theme } from "@material-ui/core";
 
 import ExploreIcon from "@material-ui/icons/Explore";
 import GroupIcon from "@material-ui/icons/Group";
-import RoomIcon from "@material-ui/icons/Room";
+// import RoomIcon from "@material-ui/icons/Room";
 import NaturePeopleIcon from "@material-ui/icons/NaturePeople";
 
-import FolderOpenIcon from "@material-ui/icons/FolderOpen";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
-import SaveAltIcon from "@material-ui/icons/SaveAlt";
 import AppsIcon from "@material-ui/icons/Apps";
 
-import { useRecoilState, useRecoilValue } from "../utils/Recoil";
-import atomMainView from "../atoms/atomMainView";
-import { Sector } from "../interfaces/Sector";
-import sectorAtom from "../atoms/atomSector";
-import sectorAtoms from "../atoms/sectorAtoms";
+
 import Title from "../components/Title";
+import { useAtom } from "jokits-react";
+import { useChangeSelectedSector } from "../hooks/useSelectedSector";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -57,7 +52,7 @@ const useStyles = makeStyles((theme: Theme) =>
                 },
                 "&.titleContainer": {
                     marginTop: "-0.5rem",
-                }
+                },
             },
         },
         mainViews: {
@@ -104,10 +99,13 @@ const useStyles = makeStyles((theme: Theme) =>
 const Header: FC = () => {
     const classes = useStyles();
 
-    const [mainView, setMainView] = useRecoilState<string>(atomMainView);
-    const [sector, setSector] = useRecoilState<Sector>(sectorAtom);
+    const [viewMode, setViewMode] = useAtom("ViewMode", "main");
+    const setSelectedSector = useChangeSelectedSector();
 
-    const sectors = useRecoilValue(sectorAtoms);
+    function backToMainView() {
+        // This will automatically return back to main view
+        setSelectedSector(undefined);
+    }
 
     return (
         <header className={classes.mainHeader}>
@@ -116,17 +114,22 @@ const Header: FC = () => {
             </div>
 
             <div className={classes.mainViews}>
-                <IconButton className={mainView === "main" ? "active" : ""} onClick={() => setMainView("main")}>
+                <IconButton className={viewMode === "main" ? "active" : ""} onClick={backToMainView}>
                     <AppsIcon />
                 </IconButton>
-
-                <IconButton className={mainView === "map" ? "active" : ""} onClick={() => setMainView("map")}>
+                <IconButton className={viewMode === "map" ? "active" : ""} onClick={() => setViewMode("map")}>
                     <ExploreIcon />
                 </IconButton>
-                <IconButton className={mainView === "npc" ? "active" : ""} onClick={() => setMainView("npc")}>
+                <IconButton
+                    className={viewMode === "character" ? "active" : ""}
+                    onClick={() => setViewMode("character")}
+                >
                     <GroupIcon />
                 </IconButton>
-                <IconButton className={mainView === "enc" ? "active" : ""} onClick={() => setMainView("enc")}>
+                <IconButton
+                    className={viewMode === "encounter" ? "active" : ""}
+                    onClick={() => setViewMode("encounter")}
+                >
                     <NaturePeopleIcon />
                 </IconButton>
             </div>

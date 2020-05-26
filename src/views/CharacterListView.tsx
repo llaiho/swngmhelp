@@ -26,12 +26,12 @@ import AttributeContainer from "../components/AttributeContainer";
 import FullSectorSelector from "../selectors/FullSector";
 import npcAtoms from "../atoms/npcAtoms";
 
-
 import { rollDice, rollDicePool } from "../utils/dice";
+import { useService, trigger } from "jokits-react";
+import useSelectedCharacter, { useChangeSelectedCharacter } from "../hooks/useSelectedCharacter";
 // Die testing
 
-console.log("DIE TEST", rollDicePool( ["d20", "d8+2"] ) );
-
+// console.log("DIE TEST", rollDicePool( ["d20", "d8+2"] ) );
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
             position: "relative",
             padding: "0.5rem",
             marginBottom: theme.spacing(1),
-            
+
             "& > div.actions": {
                 position: "absolute",
                 top: 0,
@@ -136,28 +136,26 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-const NpcListView: FC = () => {
-    const sector = useRecoilValue<FullSector>(FullSectorSelector);
-    const [npcSelected, setNpcSelected] = useRecoilState<Character | null>(atomNpcSelection);
+const CharacterListView: FC = () => {
+    
+    const [npcs, send] = useService<Character[]>("CharacterService");
 
-    const [npcs, setNpcs] = useRecoilState(npcAtoms);
+    const selectCharacter = useChangeSelectedCharacter();
+
+    // const [npcs, setNpcs] = useRecoilState(npcAtoms);
     const [searchKey, setSearchKey] = useState("");
     const classes = useStyles();
 
     function generateRandomNpc() {
-        const npc = randomNpcGenerator();
-
-        setNpcs((oldNpcs: Character[]) => [...oldNpcs, npc]);
+        send("createRandom");
     }
 
     function createNpcFromTemplate(action: string, npcTemplate: NonPlayerCharacterTemplate) {
-        console.log("From template", npcTemplate);
-        const npc = overlayTemplateToNpc(randomNpcGenerator(), npcTemplate);
-        setNpcs((oldNpcs: Character[]) => [...oldNpcs, npc]);
+        send("createRandom", npcTemplate);
     }
 
     function openNpcEditor(type: string, npc: Character) {
-        setNpcSelected(npc);
+        selectCharacter(npc);
     }
 
     function updateSearchKey(e: any) {
@@ -165,8 +163,12 @@ const NpcListView: FC = () => {
         setSearchKey(val);
     }
 
-    const activeNpcs =
-        searchKey.length > 0
+    if (!npcs) {
+        return null;
+    }
+
+    const activeNpcs: Character[] =
+        searchKey.length > 0 && npcs !== undefined
             ? npcs.filter((n: Character) => {
                   if (n.name.includes(searchKey)) return true;
                   if (n.gender.includes(searchKey)) return true;
@@ -186,7 +188,7 @@ const NpcListView: FC = () => {
             </header>
 
             <h4 className={classes.partHeader}>Current NPCs</h4>
-            {activeNpcs.length === 0 && <p style={{ color: "white" }}>No curent NPCs in the sector.</p>}
+            {activeNpcs.length === 0 && <p style={{ color: "white" }}>No NPCs currently in the sector.</p>}
             {activeNpcs.map((npc: Character) => {
                 const title: string = `${npc.name}, ${npc.gender}, ${npc.age} years old`;
                 return <NpcCard npc={npc} key={npc.id} title={title} actionIcon="edit" action={openNpcEditor} />;
@@ -327,7 +329,6 @@ const NpcTemplateCard: FC<NpcTemplateCardProps> = (props: NpcTemplateCardProps) 
         setDetailState((prev) => !prev);
     }
 
-
     const npc = props.npc;
 
     function actionHandler(e: React.SyntheticEvent) {
@@ -337,8 +338,6 @@ const NpcTemplateCard: FC<NpcTemplateCardProps> = (props: NpcTemplateCardProps) 
             props.action(props.actionIcon || "default", npc);
         }
     }
-
-    
 
     return (
         <Card classes={{ root: classes.card }} className="template" onClick={toggleDetails}>
@@ -360,4 +359,4 @@ const NpcTemplateCard: FC<NpcTemplateCardProps> = (props: NpcTemplateCardProps) 
     );
 };
 
-export default NpcListView;
+export default CharacterListView;

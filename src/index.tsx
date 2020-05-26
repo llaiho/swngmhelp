@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { addService, addJokiStates } from "jokits-react";
+import { addService, addJokiStates, joki } from "jokits-react";
 import SectorService from "./services/SectorService";
 import { Sector, StarSystem, Planet } from "./interfaces/Sector";
 import StarSystemService from "./services/StarSystemService";
@@ -11,47 +11,6 @@ import PlanetService from "./services/PlanetService";
 import { Character } from "./interfaces/Npc";
 import CharacterService from "./services/CharacterService";
 
-// Initialize Joki Services
-addService<Sector>({
-    serviceId: "SectorService",
-    service: SectorService,
-});
-
-addService<StarSystem>({
-  serviceId: "StarSystemService",
-  service: StarSystemService,
-});
-
-addService<Planet>({
-  serviceId: "PlanetService",
-  service: PlanetService,
-});
-
-addService<Character>({
-  serviceId: "CharacterService",
-  service: CharacterService,
-});
-
-addJokiStates([
-  {
-    state: "busy",
-    validNext: ["ready", "error"],
-    onNext: "ready",
-    onError: "error",
-    initial: true
-  },
-  {
-    state: "ready",
-    validNext: ["error", "busy"],
-    onError: "error",
-  },
-  {
-    state: "error",
-    validNext: ["ready", "busy"],
-    onError: "error",
-    onNext: "ready"
-  },
-]);
 
 // Interceptors maybe?
 

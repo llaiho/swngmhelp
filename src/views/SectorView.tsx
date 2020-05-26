@@ -1,42 +1,22 @@
 import React, { FC, useState } from "react";
-import {
-    Sector,
-    StarSystem,
-    PrimaryPlanet,
-    OldSector,
-    Hex,
-    StarSize,
-    Population,
-    Planet,
-    FullSector,
-    HexStore,
-} from "../interfaces/Sector";
+import { useAtomValue, trigger } from "jokits-react";
+import { makeStyles, createStyles, Theme } from "@material-ui/core";
+import { Sector, StarSystem, PrimaryPlanet, Hex, Planet } from "../interfaces/Sector";
 
-import systemAtom from "../atoms/atomSystem";
-
-import { useRecoilState, useRecoilValue } from "../utils/Recoil";
-
+import FabSave from "../components/FabSave";
 import { hexToPixelPointyTop } from "../utils/hexUtils";
-
 import useWindowSize from "../utils/useWindowSize";
-import SectorMapControls from "../components/SectorMapControls";
-import sectorZoomLevel from "../atoms/atomZoomLevel";
-import atomMapPosition from "../atoms/atomMapPosition";
+import SectorMapControls, { MapControls } from "../components/SectorMapControls";
 import SectorName from "../components/SectorName";
+
+import SaveIcon from "@material-ui/icons/Save";
 
 import hexaImg from "./plain-circle.svg";
 import selectedHexImg from "./selectedHex.svg";
 
-import SaveIcon from "@material-ui/icons/Save";
-
 import "./sector-map.scss";
-import FullSectorSelector from "../selectors/FullSector";
-import { Fab, makeStyles, createStyles, Theme, CircularProgress } from "@material-ui/core";
-import FabSave from "../components/FabSave";
-import { insertOrUpdateHex } from "../firebase/apiHex";
-import { insertOrUpdateStarSystems } from "../firebase/apiStarSystem";
-import { insertOrUpdateSector } from "../firebase/apiSector";
-import { convertStarSystem } from "../utils/saveUtils";
+import { useSelectedSectorValue } from "../hooks/useSelectedSector";
+import { useChangeSelectedStarSystem } from "../hooks/useSelectedSystem";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -59,7 +39,9 @@ interface StarOnSectorMapProps {
 }
 
 const SectorView: FC = () => {
-    const sector = useRecoilValue<FullSector>(FullSectorSelector);
+
+    const sector = useSelectedSectorValue();
+    const selectSystem = useChangeSelectedStarSystem();
 
     const [saving, setSaving] = useState<boolean>(false);
     const classes = useStyles();
@@ -68,72 +50,66 @@ const SectorView: FC = () => {
 
     const wSize = useWindowSize();
 
-    const zoomLevel = useRecoilValue<number>(sectorZoomLevel);
-    const mapPosition = useRecoilValue<[number, number]>(atomMapPosition);
+    const [controls, setControls] = useState<MapControls>({ x: 0, y: 0, zoom: 3 });
 
-    const hexSize = zoomLevels[zoomLevel];
-    const dx = wSize.width !== undefined ? wSize.width / 2 - hexSize + mapPosition[0] : 800;
-    const dy = wSize.height !== undefined ? wSize.height / 2 - hexSize + 48 + mapPosition[1] : 600;
+    const hexSize = zoomLevels[controls.zoom];
+    const dx = wSize.width !== undefined ? wSize.width / 2 - hexSize + controls.x : 800;
+    const dy = wSize.height !== undefined ? wSize.height / 2 - hexSize + 48 + controls.y : 600;
 
     function saveSector() {
-        setSaving(true);
-
-        async function saving() {
-            const stored: string[] = [];
-            try {
-                // Save Hexes in a single json
-
-                const hexStore: HexStore = {
-                    id: sector.hexFBId || "",
-                    sectorId: sector.id,
-                    hexes: sector.hexes.map((h: Hex) => {
-                        return h;
-                    }),
-                };
-                if(sector.hexFBId) {
-                    hexStore.firebaseId = sector.hexFBId;
-                }
-                const hexIds = await insertOrUpdateHex(hexStore);
-
-                // Save StarSystems
-                for (let s = 0; s < sector.stars.length - 1; s++) {
-                    const star: StarSystem = sector.stars[s];
-                    console.log("STAR", star);
-                    stored.push(`STAR: ${star.id} SAVING`);
-                    await insertOrUpdateStarSystems(convertStarSystem(star));
-                    stored.push(`STAR: ${star.id} DONE`);
-                }
-
-                const simpleSector: Sector = {
-                    ...sector,
-                    hexFBId: hexIds[0],
-                    hexes: sector.hexes.map((h: Hex) => h.id),
-                    stars: sector.stars.map((s: StarSystem) => s.id),
-                    npcs: [],
-                };
-                stored.push(`SECTOR: ${sector.id} SAVING`);
-                await insertOrUpdateSector(simpleSector);
-                stored.push(`SECTOR: ${sector.id} DONE`);
-
-                setSaving(false);
-            } catch (e) {
-                console.log("ERROR", e);
-                console.error(`Could no save the sector. sniff`, e);
-                console.table(stored);
-                setSaving(false);
-            }
-        }
-
-        saving();
+        // Saving to Firabase currently disabled and needs to be reworked
+        // setSaving(true);
+        // async function saving() {
+        //     const stored: string[] = [];
+        //     try {
+        //         // Save Hexes in a single json
+        //         const hexStore: HexStore = {
+        //             id: sector.hexFBId || "",
+        //             sectorId: sector.id,
+        //             hexes: sector.hexes.map((h: Hex) => {
+        //                 return h;
+        //             }),
+        //         };
+        //         if(sector.hexFBId) {
+        //             hexStore.firebaseId = sector.hexFBId;
+        //         }
+        //         const hexIds = await insertOrUpdateHex(hexStore);
+        //         // Save StarSystems
+        //         for (let s = 0; s < sector.stars.length - 1; s++) {
+        //             const star: StarSystem = sector.stars[s];
+        //             console.log("STAR", star);
+        //             stored.push(`STAR: ${star.id} SAVING`);
+        //             await insertOrUpdateStarSystems(convertStarSystem(star));
+        //             stored.push(`STAR: ${star.id} DONE`);
+        //         }
+        //         const simpleSector: Sector = {
+        //             ...sector,
+        //             hexFBId: hexIds[0],
+        //             hexes: sector.hexes,
+        //             stars: sector.stars.map((s: StarSystem) => s.id),
+        //             npcs: [],
+        //         };
+        //         stored.push(`SECTOR: ${sector.id} SAVING`);
+        //         await insertOrUpdateSector(simpleSector);
+        //         stored.push(`SECTOR: ${sector.id} DONE`);
+        //         setSaving(false);
+        //     } catch (e) {
+        //         console.log("ERROR", e);
+        //         console.error(`Could no save the sector. sniff`, e);
+        //         console.table(stored);
+        //         setSaving(false);
+        //     }
+        // }
+        // saving();
     }
 
-    if (sector === null) {
+    if (!sector) {
         return null;
     }
 
     return (
         <>
-            <SectorMapControls />
+            <SectorMapControls controls={controls} onChange={setControls} />
             <div className="map-container">
                 {sector.hexes.map((hex: Hex) => {
                     const system = sector.stars.find((s: StarSystem) => s.inHex === hex.id);
@@ -143,8 +119,9 @@ const SectorView: FC = () => {
                             dx={dx}
                             dy={dy}
                             system={system ? system : undefined}
-                            zoomLevel={zoomLevel}
+                            zoomLevel={controls.zoom}
                             key={hex.id}
+                            onSelect={selectSystem}
                         />
                     );
                 })}
@@ -163,11 +140,12 @@ interface HexagonProps {
     dy: number;
     zoomLevel: number;
     system?: StarSystem;
+    onSelect: (system: StarSystem) => void;
 }
 
 const Hexagon: FC<HexagonProps> = (props) => {
     const [hover, setHover] = useState(false);
-    const [selectedSystem, setSelectedSystem] = useRecoilState<StarSystem>(systemAtom);
+    // const [selectedSystem, setSelectedSystem] = useAtom<StarSystem | undefined>("SelectedSystem", undefined);
 
     const zoomLevels: number[] = [10, 25, 50, 75, 100, 150, 200];
     const hexSize = zoomLevels[props.zoomLevel];
@@ -176,17 +154,17 @@ const Hexagon: FC<HexagonProps> = (props) => {
     const contWidth = Math.sqrt(3) * hexSize;
     const contHeight = 2 * hexSize;
 
-    const selected = selectedSystem !== null && props.system && selectedSystem.id === props.system.id ? "selected" : "";
+    // const selected =
+    //     selectedSystem !== undefined && props.system && selectedSystem.id === props.system.id ? "selected" : "";
 
     const classes = ["hexagon", `zoom-${props.zoomLevel}`].join(" ");
 
     const hxImg = hover ? selectedHexImg : hexaImg;
 
     function selectMe() {
-        if (selected === "selected" || props.system === undefined) {
-            setSelectedSystem(null);
-        } else {
-            setSelectedSystem(props.system);
+        if (props.system !== undefined) {
+            console.log("Select system", props.system);
+            props.onSelect(props.system);
         }
     }
 
@@ -198,7 +176,7 @@ const Hexagon: FC<HexagonProps> = (props) => {
             onMouseLeave={() => setHover(false)}
             onClick={selectMe}
         >
-            <img src={hxImg} />
+            <img src={hxImg} alt="" />
 
             {props.system && <StarOnSectorMap system={props.system} zoom={props.zoomLevel} />}
         </div>

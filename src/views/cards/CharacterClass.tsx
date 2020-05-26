@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import CharacterCardProps from './CharacterCardProps';
+import CharacterCardProps from "./CharacterCardProps";
 import { Character } from "../../interfaces/Npc";
 import { makeStyles, createStyles, Card, ButtonGroup, Button, Grid } from "@material-ui/core";
 import useCardStyles from "./useCardStyle";
@@ -9,7 +9,6 @@ import LabelValue from "../../components/LabelValue";
 import EditableNumber from "../../components/EditableNumber";
 import DeleteIcon from "@material-ui/icons/Delete";
 
-
 const CharacterClassCard: FC<CharacterCardProps> = (props: CharacterCardProps) => {
     const classes = useCardStyles();
 
@@ -18,38 +17,21 @@ const CharacterClassCard: FC<CharacterCardProps> = (props: CharacterCardProps) =
     const hasClasses = character.charClass.length > 0;
 
     function addNewClass(charClassName: string) {
-        props.setCharacter((prev) => {
-            if (prev) {
-                const nc = { ...prev };
+        const nc: Character = { ...props.character };
+        nc.charClass = charClassName;
+        if (nc.level < 1) {
+            nc.level = 1;
+        }
 
-                nc.charClass = charClassName;
-                if (nc.level < 1) {
-                    nc.level = 1;
-                }
-
-                return nc;
-            }
-            return prev;
-        });
+        props.updateCharacter(nc);
     }
 
     function levelUpdated(k: string, v: number) {
-        props.setCharacter((prev) => {
-            if (prev) {
-                return { ...prev, level: v };
-            }
-            return prev;
-        });
+        props.updateCharacter({ ...props.character, level: v });
     }
 
     function removeClass() {
-        props.setCharacter((prev) => {
-            if (prev && prev.charClass !== "") {
-                return { ...prev, charClass: "", level: 0 };
-            }
-
-            return prev;
-        });
+        props.updateCharacter({ ...props.character, charClass: "", level: 0 });
     }
 
     const charClasses: string[] = [
