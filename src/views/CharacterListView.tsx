@@ -173,24 +173,24 @@ const CharacterListView: FC = () => {
     return (
         <Container className="data-view">
             <header className={classes.header}>
-                <h2>Non Player Characters</h2>
+                <h2>Characters</h2>
                 <div className="search">
                     <TextField value={searchKey} label="Search" variant="outlined" onChange={updateSearchKey} />
                 </div>
             </header>
 
-            <h4 className={classes.partHeader}>Current NPCs</h4>
-            {activeNpcs.length === 0 && <p style={{ color: "white" }}>No NPCs currently in the sector.</p>}
+            {/* <h4 className={classes.partHeader}>Current NPCs</h4> */}
+            {activeNpcs.length === 0 && <p style={{ color: "white" }}>No Characters in DB.</p>}
             {activeNpcs.map((npc: Character) => {
                 const title: string = `${npc.name}, ${npc.gender}, ${npc.age} years old`;
                 return <NpcCard npc={npc} key={npc.id} title={title} actionIcon="edit" action={openNpcEditor} />;
             })}
 
-            <h4 className={classes.partHeader}>NPC Templates</h4>
+            <h4 className={classes.partHeader}>Templates</h4>
 
             <Card classes={{ root: classes.card }}>
                 <p>
-                    <b>Fully random NPC character</b>
+                    <b>Fully random Character</b>
                 </p>
                 <div className="actions">
                     <IconButton onClick={generateRandomNpc}>

@@ -8,10 +8,13 @@ import NaturePeopleIcon from "@material-ui/icons/NaturePeople";
 
 import AppsIcon from "@material-ui/icons/Apps";
 
-
 import Title from "../components/Title";
 import { useAtom } from "jokits-react";
 import { useChangeSelectedSector } from "../hooks/useSelectedSector";
+
+import backupSvg from './backup.svg';
+import orbitSvg from './orbit.svg';
+import spaceshipSvg from './spaceship.svg';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -62,6 +65,9 @@ const useStyles = makeStyles((theme: Theme) =>
             alignItems: "center",
             justifyContent: "flex-end",
             "& > button": {
+                "& .customIcon": {
+                    width: "3rem",
+                },
                 "& svg": {
                     fontSize: "2rem",
                     color: "rgba(255,255,255,0.9)",
@@ -74,7 +80,11 @@ const useStyles = makeStyles((theme: Theme) =>
                         color: "rgba(255,212,255,0.9)",
                         fontSize: "2.5rem",
                     },
+                    "& .customIcon": {
+                        width: "4rem",
+                    }
                 },
+               
             },
         },
         mainControls: {
@@ -118,20 +128,26 @@ const Header: FC = () => {
                     <AppsIcon />
                 </IconButton>
                 <IconButton className={viewMode === "map" ? "active" : ""} onClick={() => setViewMode("map")}>
-                    <ExploreIcon />
+                    <img src={orbitSvg} className="customIcon" alt="starships" />
                 </IconButton>
                 <IconButton
                     className={viewMode === "character" ? "active" : ""}
                     onClick={() => setViewMode("character")}
                 >
-                    <GroupIcon />
+                    <img src={backupSvg} className="customIcon" alt="characters" />
                 </IconButton>
                 <IconButton
+                    className={viewMode === "ship" ? "active" : ""}
+                    onClick={() => setViewMode("ship")}
+                >
+                    <img src={spaceshipSvg} className="customIcon" alt="starships" />
+                </IconButton>
+                {/* <IconButton
                     className={viewMode === "encounter" ? "active" : ""}
                     onClick={() => setViewMode("encounter")}
                 >
                     <NaturePeopleIcon />
-                </IconButton>
+                </IconButton> */}
             </div>
         </header>
     );

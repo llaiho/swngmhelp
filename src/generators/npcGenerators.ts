@@ -27,6 +27,7 @@ interface PossessionGeneratorOptions {
 export function randomNpcGenerator(): Character {
     const npc: Character = {
         id: v4(),
+        isNpc: true,
         name: "Generated Random Person",
         gender: arnd(["Male", "Female"]),
         age: grnd(40, 10, 5, 18, 80),

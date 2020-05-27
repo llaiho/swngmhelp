@@ -14,6 +14,7 @@ import {
     ButtonGroup,
     CircularProgress,
     Fab,
+    Switch,
 } from "@material-ui/core";
 
 import { Character, Attributes, Skill, NpcMotivation } from "../interfaces/Npc";
@@ -51,10 +52,11 @@ import CharacterAttributes from "./cards/CharacterAttributes";
 import CharacterSkills from "./cards/CharacterSkills";
 import { insertOrUpdateCharacter } from "../firebase/apiCharacters";
 import FabSave from "../components/FabSave";
-import { useAtomValue, trigger } from "jokits-react";
+import { useAtomValue, trigger, once, JokiEvent } from "jokits-react";
 import useSelectedCharacter from "../hooks/useSelectedCharacter";
 
 import "./data-view.scss";
+import ButtonOptions from "../components/ButtonOptions";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -244,6 +246,11 @@ const useStyles = makeStyles((theme: Theme) =>
         padder: {
             padding: "1rem 0.25rem",
         },
+
+        ageText: {
+            fontSize: "1.6rem",
+            fontWeight: "bold",
+        },
     })
 );
 
@@ -286,37 +293,29 @@ const CharacterView: FC = () => {
             // setEdited(false);
             setSaving(true);
             selectCharacter(character);
+
+            once({
+                from: "CharacterService",
+                action: "ItemSaved",
+                fn: (e: JokiEvent) => {
+                    setSaving(false);
+                    setEdited(false);
+                    return e.data.id === character.id;
+                },
+            });
+
             trigger({
                 from: "React:CharacterView",
+                to: "CharacterService",
                 action: "set",
                 data: character,
             });
-            setSaving(false);
-            setEdited(false);
         }
     }
 
     function cancel() {
         // setNpcSelected(oldNpc);
         setEdited(false);
-    }
-
-    function editAttributes(name: string, value: number) {
-        if (character?.attributes) {
-            const attrs: Attributes = { ...character?.attributes } as Attributes;
-
-            if (name === "Strength") attrs.str = value;
-            if (name === "Dexterity") attrs.dex = value;
-            if (name === "Constitution") attrs.con = value;
-            if (name === "Intelligence") attrs.int = value;
-            if (name === "Wisdom") attrs.wis = value;
-            if (name === "Charisma") attrs.cha = value;
-
-            const nnpc: Character = { ...character } as Character;
-            nnpc.attributes = attrs;
-            setCharacter(nnpc);
-            setEdited(true);
-        }
     }
 
     function editMotivation(type: string, value: string) {
@@ -344,14 +343,7 @@ const CharacterView: FC = () => {
 
         setCharacter((prevState: Character | undefined) => {
             if (prevState !== undefined) {
-                const nState: Character = { ...prevState };
-
-                if (key === "name") {
-                    nState.name = value;
-                }
-                if (key === "description") {
-                    nState.description = value;
-                }
+                const nState: Character = { ...prevState, [key]: value };
 
                 return nState;
             }
@@ -360,7 +352,7 @@ const CharacterView: FC = () => {
         setEdited(true);
     }
 
-    function editMainNumberDate(key: keyof Character, value: number) {
+    function editMainNumberData(key: keyof Character, value: number) {
         console.log("EDIT NUMBER", key, value);
         setCharacter((prevState: Character | undefined) => {
             if (prevState !== undefined) {
@@ -378,13 +370,16 @@ const CharacterView: FC = () => {
     }
 
     function getNewRandomName() {
-        faker.locale = arnd(["en", "fr", "ru", "pl", "nl", "tr", "es", "de", "ge"]);
+        // faker.locale = arnd(["en", "fr", "ru", "pl", "nl", "tr", "es", "de", "ge"]);
+        faker.locale = arnd(["en"]);
         let newName = "";
 
         if (character !== undefined && character.gender === "Male") {
-            newName = `${faker.name.firstName(0)} ${faker.name.lastName(0)}`;
+            console.log("Generate Male Name");
+            newName = `${faker.name.firstName(0)} ${faker.name.lastName()}`;
         } else {
-            newName = `${faker.name.firstName(1)} ${faker.name.lastName(1)}`;
+            console.log("Generate Female Name");
+            newName = `${faker.name.firstName(1)} ${faker.name.lastName()}`;
         }
 
         editMainStringData("name", newName);
@@ -393,6 +388,17 @@ const CharacterView: FC = () => {
     function updateCharacter(character: Character): void {
         console.log("Update character", character);
         setCharacter(character);
+    }
+
+    function toggleIsNpc() {
+        setCharacter((prev: Character | undefined) => {
+            if (prev) {
+                const nc: Character = { ...prev, isNpc: !prev.isNpc };
+                return nc;
+            }
+
+            return prev;
+        });
     }
 
     if (!character) {
@@ -431,11 +437,56 @@ const CharacterView: FC = () => {
                 </div>
             </header>
 
+            <Card classes={{ root: classes.card }}>
+                <Grid container direction="row" justify="space-around" alignItems="center">
+                    <Grid item xs={1}>
+                        <Switch checked={character.isNpc} onChange={toggleIsNpc} name="isNpc" color="primary" disabled={character.charClass.length > 0}/>
+                    </Grid>
+                    <Grid item xs={3}>
+                        {character.isNpc && <h3>Non-Player Character</h3>}
+                        {!character.isNpc && <h3>Character</h3>}
+                    </Grid>
+
+                    <Grid item xs={1}>
+                        <h3>Gender:</h3>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <ButtonOptions
+                            value={character.gender}
+                            options={["Male", "Female"]}
+                            onChange={editMainStringData}
+                            dataKey="gender"
+                        />
+                    </Grid>
+
+                    <Grid item xs={1}>
+                        <h3>Age</h3>
+                    </Grid>
+
+                    <Grid item xs={3}>
+                        <TextInput
+                            dataKey="age"
+                            variant="outlined"
+                            value={String(character.age)}
+                            onDataSave={(k: string, v: string) => editMainNumberData(k as keyof Character, Number(v))}
+                            clickToEdit={true}
+                            className={classes.ageText}
+                        />
+                    </Grid>
+                </Grid>
+            </Card>
+
             <h4 className={classes.partHeader}>Attributes</h4>
             <CharacterAttributes character={character} updateCharacter={updateCharacter} />
 
-            <h4 className={classes.partHeader}>Skills</h4>
+            {!character.isNpc && (
+                <>
+                    <h4 className={classes.partHeader}>Class Information</h4>
+                    <CharacterClassCard character={character} updateCharacter={updateCharacter} />{" "}
+                </>
+            )}
 
+            <h4 className={classes.partHeader}>Skills</h4>
             <CharacterSkills character={character} updateCharacter={updateCharacter} />
 
             <h4 className={classes.partHeader}>Combat Data</h4>
@@ -444,7 +495,7 @@ const CharacterView: FC = () => {
                     <Grid item>
                         <h3>
                             Hitpoints: <big>{character.hitpoints}</big>{" "}
-                            <IconButton onClick={() => editMainNumberDate("hitpoints", rollHitpoints(character))}>
+                            <IconButton onClick={() => editMainNumberData("hitpoints", rollHitpoints(character))}>
                                 <CasinoIcon />
                             </IconButton>
                             <small className="helpText">
@@ -460,7 +511,7 @@ const CharacterView: FC = () => {
                                     <EditableNumber
                                         value={character.hitDice}
                                         onEdit={(k: string, val: number) =>
-                                            editMainNumberDate(k as keyof Character, val)
+                                            editMainNumberData(k as keyof Character, val)
                                         }
                                         name="hitDice"
                                     />
@@ -483,7 +534,7 @@ const CharacterView: FC = () => {
                             <big>
                                 <EditableNumber
                                     value={character.armourClass}
-                                    onEdit={(k: string, val: number) => editMainNumberDate(k as keyof Character, val)}
+                                    onEdit={(k: string, val: number) => editMainNumberData(k as keyof Character, val)}
                                     name="armourClass"
                                 />
                             </big>
@@ -504,123 +555,124 @@ const CharacterView: FC = () => {
                 </Grid>
             </Card>
 
-            <h4 className={classes.partHeader}>Class Information</h4>
-            <CharacterClassCard character={character} updateCharacter={updateCharacter} />
+            
 
-            <h4 className={classes.partHeader}>Personality & Motivations & Description</h4>
-            <Card classes={{ root: classes.card }}>
-                <div className={classes.wrapper}>
-                    <dl className={listStyle.root}>
-                        <dd>Initial Manners:</dd>
-                        <dt>
-                            <Select
-                                classes={{ root: classes.select }}
-                                id="npc-motivation-manner"
-                                value={character.motivation.initialManner}
-                                onChange={(e: any) => editMotivation("initialManner", e.target.value)}
-                            >
-                                {MANNERS.map((m: string) => (
-                                    <MenuItem value={m} key={m}>
-                                        {m}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </dt>
-                        <dd>Motivation</dd>
-                        <dt>
-                            <Select
-                                classes={{ root: classes.select }}
-                                id="npc-motivation-motivation"
-                                value={character.motivation.motivation}
-                                onChange={(e: any) => editMotivation("motivation", e.target.value)}
-                            >
-                                {MOTIVATION.map((m: string) => (
-                                    <MenuItem value={m} key={m}>
-                                        {m}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </dt>
-                    </dl>
-                    <dl className={listStyle.root}>
-                        <dd>What they want</dd>
-                        <dt>
-                            <Select
-                                classes={{ root: classes.select }}
-                                id="npc-motivation-want"
-                                value={character.motivation.want}
-                                onChange={(e: any) => editMotivation("want", e.target.value)}
-                            >
-                                {WANT.map((m: string) => (
-                                    <MenuItem value={m} key={m}>
-                                        {m}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </dt>
-                        <dd>Power</dd>
-                        <dt>
-                            <Select
-                                classes={{ root: classes.select }}
-                                id="npc-motivation-power"
-                                value={character.motivation.power}
-                                onChange={(e: any) => editMotivation("power", e.target.value)}
-                            >
-                                {POWER.map((m: string) => (
-                                    <MenuItem value={m} key={m}>
-                                        {m}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </dt>
-                    </dl>
-                    <dl className={listStyle.root}>
-                        <dd>Hook</dd>
-                        <dt>
-                            <Select
-                                classes={{ root: classes.select }}
-                                id="npc-motivation-hook"
-                                value={character.motivation.hook}
-                                onChange={(e: any) => editMotivation("hook", e.target.value)}
-                            >
-                                {HOOK.map((m: string) => (
-                                    <MenuItem value={m} key={m}>
-                                        {m}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </dt>
-                        <dd>When deal is done</dd>
-                        <dt>
-                            <Select
-                                classes={{ root: classes.select }}
-                                id="npc-motivation-defaultDealOutcome"
-                                value={character.motivation.defaultDealOutcome}
-                                onChange={(e: any) => editMotivation("defaultDealOutcome", e.target.value)}
-                            >
-                                {OUTCOME.map((m: string) => (
-                                    <MenuItem value={m} key={m}>
-                                        {m}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </dt>
-                    </dl>
-                </div>
+            {character.isNpc && <h4 className={classes.partHeader}>Personality & Motivations & Description</h4>}
+            {character.isNpc && (
+                <Card classes={{ root: classes.card }}>
+                    <div className={classes.wrapper}>
+                        <dl className={listStyle.root}>
+                            <dd>Initial Manners:</dd>
+                            <dt>
+                                <Select
+                                    classes={{ root: classes.select }}
+                                    id="npc-motivation-manner"
+                                    value={character.motivation.initialManner}
+                                    onChange={(e: any) => editMotivation("initialManner", e.target.value)}
+                                >
+                                    {MANNERS.map((m: string) => (
+                                        <MenuItem value={m} key={m}>
+                                            {m}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </dt>
+                            <dd>Motivation</dd>
+                            <dt>
+                                <Select
+                                    classes={{ root: classes.select }}
+                                    id="npc-motivation-motivation"
+                                    value={character.motivation.motivation}
+                                    onChange={(e: any) => editMotivation("motivation", e.target.value)}
+                                >
+                                    {MOTIVATION.map((m: string) => (
+                                        <MenuItem value={m} key={m}>
+                                            {m}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </dt>
+                        </dl>
+                        <dl className={listStyle.root}>
+                            <dd>What they want</dd>
+                            <dt>
+                                <Select
+                                    classes={{ root: classes.select }}
+                                    id="npc-motivation-want"
+                                    value={character.motivation.want}
+                                    onChange={(e: any) => editMotivation("want", e.target.value)}
+                                >
+                                    {WANT.map((m: string) => (
+                                        <MenuItem value={m} key={m}>
+                                            {m}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </dt>
+                            <dd>Power</dd>
+                            <dt>
+                                <Select
+                                    classes={{ root: classes.select }}
+                                    id="npc-motivation-power"
+                                    value={character.motivation.power}
+                                    onChange={(e: any) => editMotivation("power", e.target.value)}
+                                >
+                                    {POWER.map((m: string) => (
+                                        <MenuItem value={m} key={m}>
+                                            {m}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </dt>
+                        </dl>
+                        <dl className={listStyle.root}>
+                            <dd>Hook</dd>
+                            <dt>
+                                <Select
+                                    classes={{ root: classes.select }}
+                                    id="npc-motivation-hook"
+                                    value={character.motivation.hook}
+                                    onChange={(e: any) => editMotivation("hook", e.target.value)}
+                                >
+                                    {HOOK.map((m: string) => (
+                                        <MenuItem value={m} key={m}>
+                                            {m}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </dt>
+                            <dd>When deal is done</dd>
+                            <dt>
+                                <Select
+                                    classes={{ root: classes.select }}
+                                    id="npc-motivation-defaultDealOutcome"
+                                    value={character.motivation.defaultDealOutcome}
+                                    onChange={(e: any) => editMotivation("defaultDealOutcome", e.target.value)}
+                                >
+                                    {OUTCOME.map((m: string) => (
+                                        <MenuItem value={m} key={m}>
+                                            {m}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </dt>
+                        </dl>
+                    </div>
 
-                <div className={classes.padder}>
-                    <TextInput
-                        dataKey="description"
-                        value={character.description}
-                        label="Description & Notes"
-                        onDataSave={editMainStringData}
-                        rows={3}
-                        variant="outlined"
-                        multiline={true}
-                        classes={{ root: classes.select }}
-                    />
-                </div>
-            </Card>
+                    <div className={classes.padder}>
+                        <TextInput
+                            dataKey="description"
+                            value={character.description}
+                            label="Description & Notes"
+                            onDataSave={editMainStringData}
+                            rows={3}
+                            variant="outlined"
+                            multiline={true}
+                            classes={{ root: classes.select }}
+                        />
+                    </div>
+                </Card>
+            )}
 
             <h4 className={classes.partHeader}>Possessions</h4>
 

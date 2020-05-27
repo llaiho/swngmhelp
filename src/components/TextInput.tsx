@@ -70,9 +70,12 @@ const TextInput: FC<TextInputProps> = (props: TextInputProps) => {
     const { value, onDataSave, dataKey: datakey, clickToEdit,  ...rest } = props;
 
 
+
     if(!editMode) {
+        const classNames = ["text-field-viewer"];
+        if(props.className) classNames.push(props.className);
         return (
-            <div className="text-field-viewer" onClick={() => setEditMode(true)}>
+            <div className={classNames.join(" ")} onClick={() => setEditMode(true)}>
                 {props.label && <label>{props.label}</label>}
                 <p>{val}</p>
             </div>

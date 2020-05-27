@@ -1,7 +1,7 @@
 import { JokiServiceApi, JokiEvent, JokiService } from "jokits-react";
 import { Character, NonPlayerCharacterTemplate } from "../interfaces/Npc";
 import { eventIs } from "../utils/jokiTools";
-import { getAllCharacters } from "../firebase/apiCharacters";
+import { getAllCharacters, insertOrUpdateCharacter } from "../firebase/apiCharacters";
 import { isProcessEvent, ProcessCycleActions } from "../utils/tools/initializationProcess";
 import { overlayTemplateToNpc, randomNpcGenerator } from "../generators/npcGenerators";
 
@@ -85,8 +85,10 @@ function CharacterService(serviceId: string, api: JokiServiceApi): JokiService<C
     }
 
     function setItem(item: Character): void {
+        console.log("SET CHAR", item);
         items.set(item.id, item);
         api.updated(parsedItems());
+        save(item.id);
     }
 
     function delItem(itemId: string): void {
@@ -108,6 +110,39 @@ function CharacterService(serviceId: string, api: JokiServiceApi): JokiService<C
         });
         api.updated(items);
         return;
+    }
+
+    async function save(id: string) {
+        console.log(`Save characterid ${id} to Firebase!`);
+        const character: Character|undefined = items.get(id);
+        if(character) {
+            try {
+                const [dbId, charId] = await insertOrUpdateCharacter(character);
+                character.firebaseId = dbId;
+                items.set(charId, character);
+                console.log(`Character ${character.name} saved to Firebase with id ${dbId}!`);
+
+                
+
+                api.api.trigger({
+                    from: serviceId,
+                    action: "ItemSaved",
+                    data: {
+                        id: charId,
+                        firebaseId: dbId
+                    }
+                });
+
+                return;
+            } catch (e) {
+                console.error(`Could not save character ${character.id} ${character.name} to Firebase`, e);
+            }
+            
+        } else {
+            console.warn(`Character ${id} not found!`);
+        }
+        return;
+        
     }
 
     function getState(): Character[] {

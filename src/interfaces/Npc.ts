@@ -43,8 +43,10 @@ export interface NonPlayerCharacterTemplate {
 
 export interface Character extends FirebaseStorable {
     id: Uuid;
-    
+
     firebaseId?: string;
+
+    isNpc: boolean;
 
     name: string;
     gender: string;
