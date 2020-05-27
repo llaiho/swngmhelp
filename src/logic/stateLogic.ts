@@ -3,8 +3,10 @@ import { Sector, StarSystem, Planet } from "../interfaces/Sector";
 import SectorService from "../services/SectorService";
 import StarSystemService from "../services/StarSystemService";
 import PlanetService from "../services/PlanetService";
-import { Character } from "../interfaces/Npc";
 import CharacterService from "../services/CharacterService";
+import StarShipService from "../services/StarShipService";
+
+import { Character } from "../interfaces/Npc";
 import { createProcess } from "../utils/tools/initializationProcess";
 import { initInterceptors } from "./interceptors";
 
@@ -90,6 +92,11 @@ function begin() {
     addService<Character>({
         serviceId: "CharacterService",
         service: CharacterService,
+    });
+
+    addService<any>({
+        serviceId: "StarShipService",
+        service: StarShipService,
     });
 }
 
