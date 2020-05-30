@@ -1,11 +1,14 @@
-import { JokiEvent, JokiService, JokiServiceApi } from "jokits-react";
+import { JokiEvent, JokiService, JokiServiceApi, addService } from "jokits-react";
 import { isProcessEvent, ProcessCycleActions } from "../utils/tools/initializationProcess";
+import { Sector } from "../interfaces/Sector";
+
 
 export default function StarShipService(serviceId: string, api: JokiServiceApi): JokiService<any> {
     const items: Map<string, any> = new Map<string, any>();
 
     function eventHandler(event: JokiEvent) {
         if (event.to === serviceId) {
+
         }
         const actions = isProcessEvent(event);
         if (actions) {
@@ -21,11 +24,10 @@ export default function StarShipService(serviceId: string, api: JokiServiceApi):
 
     async function init(processActions: ProcessCycleActions) {
         processActions.begin(serviceId);
-    
-        setTimeout( () => {
+
+        setTimeout(() => {
             processActions.done(serviceId);
         }, 200);
-        
     }
 
     function getState(): any[] {
@@ -37,3 +39,5 @@ export default function StarShipService(serviceId: string, api: JokiServiceApi):
         getState,
     };
 }
+
+

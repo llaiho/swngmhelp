@@ -14,7 +14,7 @@ describe("npc generator", () => {
 
         const tmpl: NonPlayerCharacterTemplate = {
             templateName: "TestTemplate",
-            combatSkills: 2,
+            combatSkills: 1,
         };
 
         reps(1, (): void => {
@@ -24,6 +24,19 @@ describe("npc generator", () => {
 
         res.forEach((r) => {
             console.log(r.name, r.skills);
+        });
+    });
+
+    fit("Test Character", () => {
+        const res: Character[] = [];
+
+        reps(1, (): void => {
+            const npc = randomNpcGenerator();
+            res.push(npc);
+        });
+
+        res.forEach((r) => {
+            console.log(r);
         });
     });
 
@@ -99,7 +112,7 @@ describe("npc generator", () => {
         expect(nd.alpha).toBe(6);
     });
 
-    fit("Test die roller", () => {
+    it("Test die roller", () => {
 
         const res: number[] = [];
         reps(10000, () => {

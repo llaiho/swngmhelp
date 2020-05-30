@@ -2,9 +2,10 @@ import { JokiServiceApi, JokiEvent, JokiService } from "jokits-react";
 import { StarSystem } from "../interfaces/Sector";
 
 function StarSystemService(serviceId: string, api: JokiServiceApi): JokiService<StarSystem> {
-    const items: Map<string, StarSystem> = new Map<string, StarSystem>();
+    const items: Map<string, StarSystem> = new Map<string, StarSystem>();    
 
     function eventHandler(event: JokiEvent) {
+
         if (event.to === serviceId) {
             switch (event.action) {
                 case "set":
