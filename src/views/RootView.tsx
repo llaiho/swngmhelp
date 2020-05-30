@@ -14,6 +14,7 @@ import { useSelectedCharacterValue } from "../hooks/useSelectedCharacter";
 import { useSelectedStarSystemValue } from "../hooks/useSelectedSystem";
 import { useSelectedSectorValue } from "../hooks/useSelectedSector";
 import ShipListView from "./ShipListView";
+import CharacterWizardView from "./CharacterWizardView";
 
 // import { useFirebase } from "../firebase/init";
 
@@ -55,6 +56,9 @@ const RootView: FC = () => {
         case "SHIPLIST":
             ContentView = ShipListView;
             break;
+        case "CHARACTERWIZARD":
+            ContentView = CharacterWizardView;
+            break;
         case "MAIN":
         default:
             return <MainPage />;
@@ -90,6 +94,8 @@ export function useGetCurrentView(): string {
             return "MAIN";
         case "ship":
             return "SHIPLIST";
+        case "charwiz":
+            return "CHARACTERWIZARD";
         default:
             return "MAIN";
     }
