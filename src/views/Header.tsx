@@ -15,6 +15,7 @@ import { useChangeSelectedSector } from "../hooks/useSelectedSector";
 import backupSvg from './backup.svg';
 import orbitSvg from './orbit.svg';
 import spaceshipSvg from './spaceship.svg';
+import capitolSvg from './capitol.svg';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -135,6 +136,12 @@ const Header: FC = () => {
                     onClick={() => setViewMode("character")}
                 >
                     <img src={backupSvg} className="customIcon" alt="characters" />
+                </IconButton>
+                <IconButton
+                    className={viewMode === "factions" ? "active" : ""}
+                    onClick={() => setViewMode("factions")}
+                >
+                    <img src={capitolSvg} className="customIcon" alt="factions" />
                 </IconButton>
                 <IconButton
                     className={viewMode === "ship" ? "active" : ""}
