@@ -1,4 +1,4 @@
-import { Uuid } from "./Sector";
+import { Uuid, TechLevel } from "./Sector";
 
 export interface Faction {
     id: Uuid;
@@ -15,7 +15,9 @@ export interface Faction {
 
     experience: number;
 
-    tags: string[];
+    goals: string[],
+
+    tags: FactionTag[];
 
     events: FactionEvent[];
 
@@ -25,21 +27,25 @@ export interface Faction {
 
 export interface FactionAsset {
     id: Uuid;
-    owner: Uuid;
+    owner?: Uuid;
     name: string;
 
+    level: number;
     hps: number;
 
     purchaseCost: number;
 
-    attack: number;
+    attack: string;
 
-    counterAttack: number;
+    counterAttack: string;
 
     type: string;
     location: string;
 
-    techLevel: string;
+    techLevel: TechLevel;
+    notes: string[];
+
+    description: string;
 }
 
 export interface FactionEvent {
@@ -48,4 +54,12 @@ export interface FactionEvent {
     type: string;
     target: Uuid;
     description: string;
+}
+
+
+export interface FactionTag {
+    name: string;
+    description: string;
+    effect: string;
+    effectFn?: () => void;
 }
