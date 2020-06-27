@@ -1,5 +1,6 @@
-import { JokiEvent, JokiService, JokiServiceApi } from "jokits-react";
+
 import { isProcessEvent, ProcessCycleActions } from "../utils/tools/initializationProcess";
+import { JokiServiceApi, JokiService, JokiEvent } from "jokits";
 
 export default function StarShipService(serviceId: string, api: JokiServiceApi): JokiService<any> {
     const items: Map<string, any> = new Map<string, any>();

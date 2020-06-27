@@ -1,4 +1,4 @@
-import { joki, JokiState, addService, JokiEvent, config } from "jokits-react";
+import { joki, addService } from "jokits-react";
 import { Sector, StarSystem, Planet } from "../interfaces/Sector";
 import SectorService from "../services/SectorService";
 import StarSystemService from "../services/StarSystemService";
@@ -9,6 +9,7 @@ import StarShipService from "../services/StarShipService";
 import { Character } from "../interfaces/Npc";
 import { createProcess } from "../utils/tools/initializationProcess";
 import { initInterceptors } from "./interceptors";
+import { JokiState } from "jokits";
 
 const systemLogging = false;
 

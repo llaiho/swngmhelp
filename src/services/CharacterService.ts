@@ -1,9 +1,10 @@
-import { JokiServiceApi, JokiEvent, JokiService } from "jokits-react";
+
 import { Character, NonPlayerCharacterTemplate } from "../interfaces/Npc";
 import { eventIs } from "../utils/jokiTools";
 import { getAllCharacters, insertOrUpdateCharacter } from "../firebase/apiCharacters";
 import { isProcessEvent, ProcessCycleActions } from "../utils/tools/initializationProcess";
 import { overlayTemplateToNpc, randomNpcGenerator } from "../generators/npcGenerators";
+import { JokiServiceApi, JokiService, JokiEvent } from "jokits";
 
 function CharacterService(serviceId: string, api: JokiServiceApi): JokiService<Character> {
     const items: Map<string, Character> = new Map<string, Character>();

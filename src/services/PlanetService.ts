@@ -1,5 +1,6 @@
-import { JokiServiceApi, JokiEvent, JokiService } from "jokits-react";
+
 import { Planet } from "../interfaces/Sector";
+import { JokiServiceApi, JokiService, JokiEvent } from "jokits";
 
 function PlanetService(serviceId: string, api: JokiServiceApi): JokiService<Planet> {
     const items: Map<string, Planet> = new Map<string, Planet>();

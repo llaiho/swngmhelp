@@ -1,9 +1,10 @@
-import { JokiServiceApi, JokiEvent, JokiService } from "jokits-react";
+
 import { Sector, StarSystem, Hex } from "../interfaces/Sector";
 import { getAllSectors } from "../firebase/apiSector";
 import { eventIs } from "../utils/jokiTools";
 import { isProcessEvent, ProcessCycleActions } from "../utils/tools/initializationProcess";
 import createSector, { CreateSectorOptions } from "../generators/createCubeSector";
+import { JokiServiceApi, JokiService, JokiEvent } from "jokits";
 
 function SectorService(serviceId: string, api: JokiServiceApi): JokiService<Sector> {
     const items: Map<string, Sector> = new Map<string, Sector>();

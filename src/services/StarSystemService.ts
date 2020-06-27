@@ -1,5 +1,6 @@
-import { JokiServiceApi, JokiEvent, JokiService } from "jokits-react";
+
 import { StarSystem } from "../interfaces/Sector";
+import { JokiServiceApi, JokiService, JokiEvent } from "jokits";
 
 function StarSystemService(serviceId: string, api: JokiServiceApi): JokiService<StarSystem> {
     const items: Map<string, StarSystem> = new Map<string, StarSystem>();

@@ -52,11 +52,12 @@ import CharacterAttributes from "./cards/CharacterAttributes";
 import CharacterSkills from "./cards/CharacterSkills";
 import { insertOrUpdateCharacter } from "../firebase/apiCharacters";
 import FabSave from "../components/FabSave";
-import { useAtomValue, trigger, once, JokiEvent } from "jokits-react";
+import { useAtomValue, trigger, once } from "jokits-react";
 import useSelectedCharacter from "../hooks/useSelectedCharacter";
 
 import "./data-view.scss";
 import ButtonOptions from "../components/ButtonOptions";
+import { JokiEvent } from "jokits";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

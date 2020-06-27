@@ -1,5 +1,6 @@
-import { JokiEvent, joki } from "jokits-react";
+import { joki } from "jokits-react";
 import { eventIs } from "../jokiTools";
+import { JokiEvent } from "jokits";
 
 const existingProcesses: Set<string> = new Set<string>();
 
