@@ -3,13 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { addService, addJokiStates, joki } from "jokits-react";
-import SectorService from "./services/SectorService";
-import { Sector, StarSystem, Planet } from "./interfaces/Sector";
-import StarSystemService from "./services/StarSystemService";
-import PlanetService from "./services/PlanetService";
-import { Character } from "./interfaces/Npc";
-import CharacterService from "./services/CharacterService";
+
 
 
 // Interceptors maybe?
