@@ -33,37 +33,37 @@ export const ShipFittings: ShipFitting[] = [
 
     {
         fittingName: "Automation support",
-        fittingCost: 10000,
-        fittingCostHullSizeMultiplier: true,
-        fittingPowerModifier: 2,
-        fittingPowerHullSizeMultiplier: false,
-        fittingMassModifier: 1,
-        fittingMassHullSizeMultiplier: false,
-        fittingHullSizes: [ShipHullSize.Fighter, ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
+        generalCost: 10000,
+        generalCostHullSizeMultiplier: true,
+        generalPowerModifier: 2,
+        generalPowerHullSizeMultiplier: false,
+        generalMassModifier: 1,
+        generalMassHullSizeMultiplier: false,
+        generalHullSizes: [ShipHullSize.Fighter, ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
         fittingEffectDescription: "Ship can use simple robots as crew"
     },
         
     {
         fittingName: "Cargo space",
-        fittingCost: 0,
-        fittingCostHullSizeMultiplier: false,
-        fittingPowerModifier: 0,
-        fittingPowerHullSizeMultiplier: false,
-        fittingMassModifier: 1,
-        fittingMassHullSizeMultiplier: false,
-        fittingHullSizes: [ShipHullSize.Fighter, ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
+        generalCost: 0,
+        generalCostHullSizeMultiplier: false,
+        generalPowerModifier: 0,
+        generalPowerHullSizeMultiplier: false,
+        generalMassModifier: 1,
+        generalMassHullSizeMultiplier: false,
+        generalHullSizes: [ShipHullSize.Fighter, ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
         fittingEffectDescription: "Pressurized cargo space"
     },
 
     {
         fittingName: "Drive-2 upgrade",
-        fittingCost: 10000,
-        fittingCostHullSizeMultiplier: true,
-        fittingPowerModifier: 1,
-        fittingPowerHullSizeMultiplier: true,
-        fittingMassModifier: 1,
-        fittingMassHullSizeMultiplier: true,
-        fittingHullSizes: [ShipHullSize.Fighter, ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
+        generalCost: 10000,
+        generalCostHullSizeMultiplier: true,
+        generalPowerModifier: 1,
+        generalPowerHullSizeMultiplier: true,
+        generalMassModifier: 1,
+        generalMassHullSizeMultiplier: true,
+        generalHullSizes: [ShipHullSize.Fighter, ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
         fittingEffectDescription: "Upgrade a spike drive to drive-2 rating"
     }
 

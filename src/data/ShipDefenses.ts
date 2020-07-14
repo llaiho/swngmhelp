@@ -5,10 +5,13 @@ export const ShipDefenses: ShipDefense[] = [
 
     {
         defenseName: "Ablative Hull Compartments",
-        defenseCost: 100000,
-        defensePowerModifier: 5,
-        defenseMassModifier: 2,
-        defenseMinimumHullSize: ShipHullSize.Capital,
+        generalCost: 100000,
+        generalCostHullSizeMultiplier: true,
+        generalPowerModifier: 5,
+        generalPowerHullSizeMultiplier: false,
+        generalMassModifier: 2,
+        generalMassHullSizeMultiplier: true,
+        generalHullSizes: [ShipHullSize.Capital],
         defenseEffectDescription: "+1 AC, +20 maximum hit points",
         defenseEffectAC: 1,
         defenseEffectHP: 20
@@ -17,10 +20,13 @@ export const ShipDefenses: ShipDefense[] = [
 
     {
         defenseName: "Augmented Plating",
-        defenseCost: 25,
-        defensePowerModifier: 0,
-        defenseMassModifier: 1,
-        defenseMinimumHullSize: ShipHullSize.Fighter,
+        generalCost: 25,
+        generalCostHullSizeMultiplier: true,
+        generalPowerModifier: 0,
+        generalPowerHullSizeMultiplier: false,
+        generalMassModifier: 1,
+        generalMassHullSizeMultiplier: true,
+        generalHullSizes: [ShipHullSize.Fighter, ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
         defenseEffectDescription: "+2 AC, -1 Speed",
         defenseEffectAC: 2,
         defenseEffectSpeed: -1

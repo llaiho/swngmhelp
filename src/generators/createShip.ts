@@ -1,4 +1,4 @@
-import { ShipHullSize, Ship, ShipHull, ShipFitting, ShipDefense, ShipWeapon  } from "../interfaces/Ship";
+import { ShipHullSize, Ship, ShipHull, ShipFitting, ShipDefense, ShipWeapon, ShipAddition  } from "../interfaces/Ship";
 
 import { arnd, rnd, arnds, roll, grnd } from "../utils/randUtils";
 import { Uuid } from "../interfaces/Sector";
@@ -36,15 +36,46 @@ export function randomShipGenerator(): Ship {
         shipCurrentCrew: 0,
     }
 
-    figureFittingFittings(ship.shipSizeClass, ship.shipFreePower, ship.shipFreeMass)
+
+    if ((ship.shipFreeMass > 0) || (ship.shipFreePower > 0)) {
+        figureAdditions(ship)
+    }
+
+//    figureFittingFittings(ship)
 
     return ship;
 }
 
+function figureAdditions(ship: Ship) {
+
+    if ((ship.shipFreePower > 0)  && (ship.shipFreeMass > 0) && (ship.shipFreeHardpoints)) {
+        figureFittingWeapons(ship)
+    }
+}
+
+function figureFittingWeapons(ship: Ship) {
+
+    return ShipWeapons.filter((fit: ShipWeapon) => {
+        return (checkMass(fit, ship.shipSizeClass, ship.shipFreeMass) && (checkPower(fit, ship.shipSizeClass, ship.shipFreePower)) && checkHardPoints(fit, ship.shipFreeHardpoints))
+    })
+}
+
+function figureFittingDefences(ship: Ship) {
+
+    return ShipDefenses.filter((fit: ShipDefense) => {
+        return (checkMass(fit, ship.shipSizeClass, ship.shipFreeMass) && (checkPower(fit, ship.shipSizeClass, ship.shipFreePower)))
+    })
+}
+
+function figureFittingFittings(ship: Ship) {
+
+    return ShipFittings.filter((fit: ShipFitting) => {
+        return (checkMass(fit, ship.shipSizeClass, ship.shipFreeMass) && (checkPower(fit, ship.shipSizeClass, ship.shipFreePower)))
+    })
+}
 
 
-
-
+/* 
 function figureFittingFittings(hullSize: ShipHullSize, power: number, mass: number) {
     
     const fittingShipFittings: ShipFitting[] = [];
@@ -61,9 +92,9 @@ function figureFittingFittings(hullSize: ShipHullSize, power: number, mass: numb
     }
     return fittingShipFittings;
 }
+ */
 
-
-function getModifier(fitting: ShipFitting, hullSize: ShipHullSize): number {
+function getModifier(hullSize: ShipHullSize): number {
 
     const mod: number | undefined =  shipFittingsPowerAndMassModifier.get(hullSize);
 
@@ -74,15 +105,15 @@ function getModifier(fitting: ShipFitting, hullSize: ShipHullSize): number {
 }
 
 
-function checkMass(fitting: ShipFitting, hullSize: ShipHullSize, mass: number): boolean {
+function checkMass(fitting: ShipFitting | ShipWeapon | ShipDefense, hullSize: ShipHullSize, mass: number): boolean {
     
-    if (fitting.fittingMassHullSizeMultiplier) {               
-        if ((fitting.fittingMassModifier * getModifier(fitting, hullSize)) <= mass) {
+    if (fitting.generalMassHullSizeMultiplier) {               
+        if ((fitting.generalMassModifier * getModifier(hullSize)) <= mass) {
             return true;  
         }
     }
     else {
-        if (fitting.fittingMassModifier <= mass) {
+        if (fitting.generalMassModifier <= mass) {
             return true;
         }
     }
@@ -90,20 +121,28 @@ function checkMass(fitting: ShipFitting, hullSize: ShipHullSize, mass: number): 
 }
 
 
-function checkPower(fitting: ShipFitting, hullSize: ShipHullSize, power: number): boolean {
+function checkPower(fitting: ShipFitting | ShipWeapon | ShipDefense, hullSize: ShipHullSize, power: number): boolean {
 
-    if (fitting.fittingPowerHullSizeMultiplier) {
-        if ((fitting.fittingPowerModifier * getModifier(fitting, hullSize)) <= power) {
+    if (fitting.generalPowerHullSizeMultiplier) {
+        if ((fitting.generalPowerModifier * getModifier(hullSize)) <= power) {
             return true;
         }
     }
     else {
-        if (fitting.fittingPowerModifier <= power) {
+        if (fitting.generalPowerModifier <= power) {
             return true;
         }
     }          
     return false;
 }
+
+function checkHardPoints(fitting: ShipWeapon, hardPoints: number): boolean {
+    
+    if (fitting.weaponHardpoint <= hardPoints) {
+        return true;
+    }
+    return false;
+} 
 
 
 

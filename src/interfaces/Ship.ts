@@ -56,25 +56,39 @@ export interface ShipHull {
 }
 
 
-export interface ShipFitting {
+export interface ShipAddition {
+    generalCost: number;
+    generalCostHullSizeMultiplier: boolean;
+    generalPowerModifier: number;
+    generalPowerHullSizeMultiplier: boolean;
+    generalMassModifier: number;
+    generalMassHullSizeMultiplier: boolean;
+    generalHullSizes: ShipHullSize[];
+}
+
+
+export interface ShipFitting extends ShipAddition {
     fittingName: string;
-    fittingCost?: number;
-    fittingCostHullSizeMultiplier: boolean;
-    fittingPowerModifier: number;
-    fittingPowerHullSizeMultiplier: boolean;
-    fittingMassModifier: number;
-    fittingMassHullSizeMultiplier: boolean;
-    fittingHullSizes: ShipHullSize[];
+    // generalCost: number;
+    // generalCostHullSizeMultiplier: boolean;
+    // generalPowerModifier: number;
+    // generalPowerHullSizeMultiplier: boolean;
+    // generalMassModifier: number;
+    // generalMassHullSizeMultiplier: boolean;
+    // generalHullSizes: ShipHullSize[];
     fittingEffectDescription: string;
 }
 
 
-export interface ShipDefense {
+export interface ShipDefense extends ShipAddition {
     defenseName: string;
-    defenseCost: number;
-    defensePowerModifier: number;
-    defenseMassModifier: number;
-    defenseMinimumHullSize: ShipHullSize;
+    // generalCost: number;
+    // generalCostHullSizeMultiplier: boolean;
+    // generalPowerModifier: number;
+    // generalPowerHullSizeMultiplier: boolean;
+    // generalMassModifier: number;
+    // generalMassHullSizeMultiplier: boolean;
+    // generalHullSizes: ShipHullSize;
     defenseEffectDescription: string;
     defenseEffectAC?: number;
     defenseEffectHP?: number;
@@ -84,15 +98,18 @@ export interface ShipDefense {
 
 
 
-export interface ShipWeapon {
+export interface ShipWeapon extends ShipAddition {
     weaponName: string;
-    weaponCost: number;
+    // generalCost: number;
+    // generalCostHullSizeMultiplier: boolean;
     weaponAmmoCost?: number;
     weaponDamage?: string;
-    weaponPower: number;
-    weaponMass: number;
+    // generalPowerModifier: number;
+    // generalPowerHullSizeMultiplier: boolean;
+    // generalMassModifier: number;
+    // generalMassHullSizeMultiplier: boolean;
     weaponHardpoint: number;
-    weaponMinHullSize: ShipHullSize;
+//    generalHullSizes: ShipHullSize;
     weaponTechnologyLevel: number;
     weaponQualitiesAP?: number;
     weaponQualitiesAmmo?: number;

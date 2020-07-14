@@ -6,12 +6,15 @@ export const ShipWeapons: ShipWeapon[] = [
 
     {
         weaponName: "Multifocal Laser",
-        weaponCost: 100000,
+        generalCost: 100000,
+        generalCostHullSizeMultiplier: false,
         weaponDamage: "1d4",
-        weaponPower: 5,
-        weaponMass: 1,
+        generalPowerModifier: 5,
+        generalPowerHullSizeMultiplier: false,
+        generalMassModifier: 1,
+        generalMassHullSizeMultiplier: false,
         weaponHardpoint: 1,
-        weaponMinHullSize: ShipHullSize.Fighter,
+        generalHullSizes: [ShipHullSize.Fighter, ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
         weaponTechnologyLevel: 4,
         weaponQualitiesAP: 20    
     },
@@ -19,13 +22,16 @@ export const ShipWeapons: ShipWeapon[] = [
 
     {
         weaponName: "Torpedo Launcher",
-        weaponCost: 100000,
+        generalCost: 100000,
+        generalCostHullSizeMultiplier: false,
         weaponAmmoCost: 2500,
         weaponDamage: "3d8",
-        weaponPower: 10,
-        weaponMass: 3,
+        generalPowerModifier: 10,
+        generalPowerHullSizeMultiplier: false,
+        generalMassModifier: 3,
+        generalMassHullSizeMultiplier: false,
         weaponHardpoint: 1,
-        weaponMinHullSize: ShipHullSize.Frigate,
+        generalHullSizes: [ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
         weaponTechnologyLevel: 4,
         weaponQualitiesAP: 20,
         weaponQualitiesAmmo: 4    
