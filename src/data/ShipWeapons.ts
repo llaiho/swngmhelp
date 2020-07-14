@@ -21,6 +21,22 @@ export const ShipWeapons: ShipWeapon[] = [
 
 
     {
+        weaponName: "Sandthrower",
+        generalCost: 50000,
+        generalCostHullSizeMultiplier: false,
+        weaponDamage: "2d4",
+        generalPowerModifier: 3,
+        generalPowerHullSizeMultiplier: false,
+        generalMassModifier: 1,
+        generalMassHullSizeMultiplier: false,
+        weaponHardpoint: 1,
+        generalHullSizes: [ShipHullSize.Fighter, ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
+        weaponTechnologyLevel: 4,
+        weaponQualitiesFlak: true    
+    },
+
+
+    {
         weaponName: "Torpedo Launcher",
         generalCost: 100000,
         generalCostHullSizeMultiplier: false,

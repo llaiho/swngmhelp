@@ -34,6 +34,9 @@ export function randomShipGenerator(): Ship {
         shipFreeMass: hull.hullMass,
         shipFreeHardpoints: hull.hullHardpoints,
         shipCurrentCrew: 0,
+        shipAddedFittings: [],
+        shipAddedDefenses: [],
+        shipAddedWeapons:  [],
     }
 
 
@@ -48,10 +51,48 @@ export function randomShipGenerator(): Ship {
 
 function figureAdditions(ship: Ship) {
 
-    if ((ship.shipFreePower > 0)  && (ship.shipFreeMass > 0) && (ship.shipFreeHardpoints)) {
-        figureFittingWeapons(ship)
+    if ((ship.shipFreePower > 0)  && (ship.shipFreeMass > 0) && (ship.shipFreeHardpoints)) { // shuttle saa aina sandthrowerin
+        if (figureFittingWeapons(ship).length > 0) {
+            const newWeapon = arnd(figureFittingWeapons(ship));
+            modifyShipValuesWeapon(ship, newWeapon);
+        }       
+    }
+    if ((ship.shipFreePower > 0)  && (ship.shipFreeMass > 0)) {
+        if (figureFittingDefences(ship).length > 0) {
+            if (roll(30)) {
+                const newDefence = arnd(figureFittingDefences(ship))
+                modifyShipValuesDefense(ship, newDefence);
+            }
+        }
+        const newFitting = arnd(figureFittingFittings(ship));
+        modifyShipValuesFitting(ship, newFitting);
     }
 }
+
+
+function modifyShipValuesWeapon(ship: Ship, weapon: ShipWeapon) {
+    ship.shipCost = ship.shipCost + (weapon.generalCost * getCostModifier(ship.shipSizeClass));
+    ship.shipFreePower = ship.shipFreePower - (weapon.generalPowerModifier * getPowerAndMassModifier(ship.shipSizeClass));
+    ship.shipFreeMass  = ship.shipFreeMass  - (weapon.generalMassModifier * getPowerAndMassModifier(ship.shipSizeClass));
+    ship.shipFreeHardpoints = ship.shipFreeHardpoints - weapon.weaponHardpoint;
+    ship.shipAddedWeapons.push(weapon);
+}
+
+function modifyShipValuesDefense(ship: Ship, addition: ShipDefense) {
+    ship.shipCost = ship.shipCost + (addition.generalCost * getCostModifier(ship.shipSizeClass));
+    ship.shipFreePower = ship.shipFreePower - (addition.generalPowerModifier * getPowerAndMassModifier(ship.shipSizeClass));
+    ship.shipFreeMass  = ship.shipFreeMass  - (addition.generalMassModifier * getPowerAndMassModifier(ship.shipSizeClass));
+    ship.shipAddedDefenses.push(addition);
+}
+
+function modifyShipValuesFitting(ship: Ship, addition: ShipFitting) {
+    ship.shipCost = ship.shipCost + (addition.generalCost * getCostModifier(ship.shipSizeClass));
+    ship.shipFreePower = ship.shipFreePower - (addition.generalPowerModifier * getPowerAndMassModifier(ship.shipSizeClass));
+    ship.shipFreeMass  = ship.shipFreeMass  - (addition.generalMassModifier * getPowerAndMassModifier(ship.shipSizeClass));
+    ship.shipAddedFittings.push(addition);
+}
+
+
 
 function figureFittingWeapons(ship: Ship) {
 
@@ -94,9 +135,20 @@ function figureFittingFittings(hullSize: ShipHullSize, power: number, mass: numb
 }
  */
 
-function getModifier(hullSize: ShipHullSize): number {
+function getPowerAndMassModifier(hullSize: ShipHullSize): number {
 
     const mod: number | undefined =  shipFittingsPowerAndMassModifier.get(hullSize);
+
+    if (mod !== undefined) {
+        return mod;
+    }
+    return 1;
+}
+
+
+function getCostModifier(hullSize: ShipHullSize): number {
+
+    const mod: number | undefined =  shipFittingsCostModifier.get(hullSize);
 
     if (mod !== undefined) {
         return mod;
@@ -108,7 +160,7 @@ function getModifier(hullSize: ShipHullSize): number {
 function checkMass(fitting: ShipFitting | ShipWeapon | ShipDefense, hullSize: ShipHullSize, mass: number): boolean {
     
     if (fitting.generalMassHullSizeMultiplier) {               
-        if ((fitting.generalMassModifier * getModifier(hullSize)) <= mass) {
+        if ((fitting.generalMassModifier * getPowerAndMassModifier(hullSize)) <= mass) {
             return true;  
         }
     }
@@ -124,7 +176,7 @@ function checkMass(fitting: ShipFitting | ShipWeapon | ShipDefense, hullSize: Sh
 function checkPower(fitting: ShipFitting | ShipWeapon | ShipDefense, hullSize: ShipHullSize, power: number): boolean {
 
     if (fitting.generalPowerHullSizeMultiplier) {
-        if ((fitting.generalPowerModifier * getModifier(hullSize)) <= power) {
+        if ((fitting.generalPowerModifier * getPowerAndMassModifier(hullSize)) <= power) {
             return true;
         }
     }

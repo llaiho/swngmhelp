@@ -36,6 +36,9 @@ export interface Ship {
     shipFreeMass: number;
     shipFreeHardpoints: number;
     shipCurrentCrew: number;
+    shipAddedFittings: ShipFitting[];
+    shipAddedDefenses: ShipDefense[];
+    shipAddedWeapons:  ShipWeapon[];
     
 }
 
