@@ -1,11 +1,29 @@
 import { Uuid } from "./Sector";
 
 
+export enum ShipHullSize {
+    "Fighter" = "Fighter",
+    "Frigate" = "Frigate",
+    "Cruiser" = "Cruiser",
+    "Capital" = "Capital",
+}
+
+
+// export enum ShipHullSize {
+//    "Fighter" = 1,
+//    "Frigate" = 2,
+//    "Cruiser" = 3,
+//    "Capital" = 4,
+// }
+
+
+
 export interface Ship {
     id: Uuid;
     location: Uuid;
     shipName: string;
-    shipBaseHull: string;
+    shipBaseHull: ShipHull;
+    shipSizeClass: ShipHullSize;
     shipCost: number;
     shipSpeed: number;
     shipArmor: number;
@@ -34,19 +52,19 @@ export interface ShipHull {
     hullPower: number;
     hullMass: number;
     hullHardpoints: number;
-    hullSizeClass: "Fighter" | "Frigate" | "Cruiser" | "Capital";
+    hullSizeClass: ShipHullSize;
 }
 
 
 export interface ShipFitting {
     fittingName: string;
     fittingCost?: number;
-    fittingCostHullSizeMultiplier?: boolean;
+    fittingCostHullSizeMultiplier: boolean;
     fittingPowerModifier: number;
-    fittingPowerHullSizeMultiplier?: boolean;
+    fittingPowerHullSizeMultiplier: boolean;
     fittingMassModifier: number;
-    fittingMassHullSizeMultiplier?: boolean;
-    fittingMinimumHullSize: "Fighter" | "Frigate" | "Cruiser" | "Capital";
+    fittingMassHullSizeMultiplier: boolean;
+    fittingHullSizes: ShipHullSize[];
     fittingEffectDescription: string;
 }
 
@@ -56,7 +74,7 @@ export interface ShipDefense {
     defenseCost: number;
     defensePowerModifier: number;
     defenseMassModifier: number;
-    defenseMinimumHullSize: "Fighter" | "Frigate" | "Cruiser" | "Capital";
+    defenseMinimumHullSize: ShipHullSize;
     defenseEffectDescription: string;
     defenseEffectAC?: number;
     defenseEffectHP?: number;
@@ -74,7 +92,7 @@ export interface ShipWeapon {
     weaponPower: number;
     weaponMass: number;
     weaponHardpoint: number;
-    weaponMinHullSize: "Fighter" | "Frigate" | "Cruiser" | "Capital";
+    weaponMinHullSize: ShipHullSize;
     weaponTechnologyLevel: number;
     weaponQualitiesAP?: number;
     weaponQualitiesAmmo?: number;

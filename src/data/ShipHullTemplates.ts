@@ -1,7 +1,7 @@
-import { ShipHull } from "../interfaces/Ship";
+import { ShipHull, ShipHullSize } from "../interfaces/Ship";
 
 
-const ShipHullTemplates: ShipHull[] = [
+export const ShipHullTemplates: ShipHull[] = [
 
     {
         hullName: "Strike Fighter",
@@ -15,7 +15,7 @@ const ShipHullTemplates: ShipHull[] = [
         hullPower: 5,
         hullMass: 2,
         hullHardpoints: 1,
-        hullSizeClass: "Fighter"
+        hullSizeClass: ShipHullSize.Fighter
     },
 
 
@@ -32,7 +32,7 @@ const ShipHullTemplates: ShipHull[] = [
         hullPower: 10,
         hullMass: 15,
         hullHardpoints: 2,
-        hullSizeClass: "Frigate"
+        hullSizeClass: ShipHullSize.Frigate
     },
 
 ];

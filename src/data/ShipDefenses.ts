@@ -1,14 +1,14 @@
-import { ShipDefense } from "../interfaces/Ship";
+import { ShipDefense, ShipHullSize } from "../interfaces/Ship";
 
 
-const ShipDefenses: ShipDefense[] = [
+export const ShipDefenses: ShipDefense[] = [
 
     {
         defenseName: "Ablative Hull Compartments",
         defenseCost: 100000,
         defensePowerModifier: 5,
         defenseMassModifier: 2,
-        defenseMinimumHullSize: "Capital",
+        defenseMinimumHullSize: ShipHullSize.Capital,
         defenseEffectDescription: "+1 AC, +20 maximum hit points",
         defenseEffectAC: 1,
         defenseEffectHP: 20
@@ -20,7 +20,7 @@ const ShipDefenses: ShipDefense[] = [
         defenseCost: 25,
         defensePowerModifier: 0,
         defenseMassModifier: 1,
-        defenseMinimumHullSize: "Fighter",
+        defenseMinimumHullSize: ShipHullSize.Fighter,
         defenseEffectDescription: "+2 AC, -1 Speed",
         defenseEffectAC: 2,
         defenseEffectSpeed: -1

@@ -1,8 +1,8 @@
-import { ShipWeapon } from "../interfaces/Ship";
+import { ShipWeapon, ShipHullSize } from "../interfaces/Ship";
 
 
 
-const ShipWeapons: ShipWeapon[] = [
+export const ShipWeapons: ShipWeapon[] = [
 
     {
         weaponName: "Multifocal Laser",
@@ -11,7 +11,7 @@ const ShipWeapons: ShipWeapon[] = [
         weaponPower: 5,
         weaponMass: 1,
         weaponHardpoint: 1,
-        weaponMinHullSize: "Fighter",
+        weaponMinHullSize: ShipHullSize.Fighter,
         weaponTechnologyLevel: 4,
         weaponQualitiesAP: 20    
     },
@@ -25,7 +25,7 @@ const ShipWeapons: ShipWeapon[] = [
         weaponPower: 10,
         weaponMass: 3,
         weaponHardpoint: 1,
-        weaponMinHullSize: "Frigate",
+        weaponMinHullSize: ShipHullSize.Frigate,
         weaponTechnologyLevel: 4,
         weaponQualitiesAP: 20,
         weaponQualitiesAmmo: 4    
