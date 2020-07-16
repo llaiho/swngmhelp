@@ -67,6 +67,7 @@ export interface ShipAddition {
     generalMassModifier: number;
     generalMassHullSizeMultiplier: boolean;
     generalHullSizes: ShipHullSize[];
+    generalCanHaveMultiple: boolean;
 }
 
 

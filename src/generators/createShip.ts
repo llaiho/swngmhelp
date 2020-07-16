@@ -39,13 +39,23 @@ export function randomShipGenerator(): Ship {
         shipAddedWeapons:  [],
     }
 
-
-    if ((ship.shipFreeMass > 0) || (ship.shipFreePower > 0)) {
-        figureAdditions(ship)
+    for (var i = 0; i < 10; i++) {
+        if ((ship.shipFreeMass > 0) || (ship.shipFreePower > 0)) {
+            figureAdditions(ship)
+        }
     }
+
+    console.log(ship.shipAddedFittings);
+    console.log(ship.shipAddedDefenses);
+    console.log(ship.shipAddedWeapons);
+
+//    while (((ship.shipFreeMass > 0) || (ship.shipFreePower > 0)) && const i < 10 ) {
+//        figureAdditions(ship)
+//    }
 
 //    figureFittingFittings(ship)
 
+//    console.log(ship);
     return ship;
 }
 
@@ -97,21 +107,28 @@ function modifyShipValuesFitting(ship: Ship, addition: ShipFitting) {
 function figureFittingWeapons(ship: Ship) {
 
     return ShipWeapons.filter((fit: ShipWeapon) => {
-        return (checkMass(fit, ship.shipSizeClass, ship.shipFreeMass) && (checkPower(fit, ship.shipSizeClass, ship.shipFreePower)) && checkHardPoints(fit, ship.shipFreeHardpoints))
+        return ((checkMass(fit, ship.shipSizeClass, ship.shipFreeMass)) 
+            && (checkPower(fit, ship.shipSizeClass, ship.shipFreePower)) 
+            && (checkHardPoints(fit, ship.shipFreeHardpoints))
+            && (checkCanHaveMultipleWeapons(fit, ship)))
     })
 }
 
 function figureFittingDefences(ship: Ship) {
 
     return ShipDefenses.filter((fit: ShipDefense) => {
-        return (checkMass(fit, ship.shipSizeClass, ship.shipFreeMass) && (checkPower(fit, ship.shipSizeClass, ship.shipFreePower)))
+        return ((checkMass(fit, ship.shipSizeClass, ship.shipFreeMass)) 
+            && (checkPower(fit, ship.shipSizeClass, ship.shipFreePower))
+            && (checkCanHaveMultipleDefences(fit, ship)))
     })
 }
 
 function figureFittingFittings(ship: Ship) {
 
     return ShipFittings.filter((fit: ShipFitting) => {
-        return (checkMass(fit, ship.shipSizeClass, ship.shipFreeMass) && (checkPower(fit, ship.shipSizeClass, ship.shipFreePower)))
+        return ((checkMass(fit, ship.shipSizeClass, ship.shipFreeMass)) 
+            && (checkPower(fit, ship.shipSizeClass, ship.shipFreePower))
+            && (checkCanHaveMultipleFittings(fit, ship)))
     })
 }
 
@@ -156,6 +173,10 @@ function getCostModifier(hullSize: ShipHullSize): number {
     return 1;
 }
 
+///////////////////////////////////////
+//                                   //
+//      Chekcing functions start     //
+
 
 function checkMass(fitting: ShipFitting | ShipWeapon | ShipDefense, hullSize: ShipHullSize, mass: number): boolean {
     
@@ -196,10 +217,42 @@ function checkHardPoints(fitting: ShipWeapon, hardPoints: number): boolean {
     return false;
 } 
 
+function checkCanHaveMultipleWeapons(fitting: ShipWeapon, ship: Ship): boolean {
+
+    if (fitting.generalCanHaveMultiple) {
+        return true;
+    }
+    if ((fitting.generalCanHaveMultiple === false) && !(ship.shipAddedWeapons).includes(fitting)) {
+        return true;
+    }
+    return false;
+}
+
+function checkCanHaveMultipleDefences(fitting: ShipDefense, ship: Ship): boolean {
+
+    if (fitting.generalCanHaveMultiple) {
+        return true;
+    }
+    if ((fitting.generalCanHaveMultiple === false) && !(ship.shipAddedDefenses).includes(fitting)) {
+        return true;
+    }
+    return false;
+}
+
+function checkCanHaveMultipleFittings(fitting: ShipFitting, ship: Ship): boolean {
+
+    if (fitting.generalCanHaveMultiple) {
+        return true;
+    }
+    if ((fitting.generalCanHaveMultiple === false) && !(ship.shipAddedFittings).includes(fitting)) {
+        return true;
+    }
+    return false;
+}
 
 
 
-
-
-
+//      Chekcing functions end       //
+//                                   //
+///////////////////////////////////////
 

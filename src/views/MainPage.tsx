@@ -24,6 +24,8 @@ import { useService, useAtom, joki } from "jokits-react";
 import { useChangeSelectedSector } from "../hooks/useSelectedSector";
 import LabelValue from "../components/LabelValue";
 
+import { randomShipGenerator } from "../generators/createShip";
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         header: {
@@ -138,10 +140,14 @@ const MainPage: FC = () => {
     }
 
     function newSector() {
+        const ship = randomShipGenerator();
+        console.log(ship);
+
         const sectorOpts = {
             density: densityNumToString[density - 1],
             rings: size,
         };
+        
         send("create", sectorOpts);
     }
 

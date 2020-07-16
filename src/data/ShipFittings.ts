@@ -40,7 +40,8 @@ export const ShipFittings: ShipFitting[] = [
         generalMassModifier: 1,
         generalMassHullSizeMultiplier: false,
         generalHullSizes: [ShipHullSize.Fighter, ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
-        fittingEffectDescription: "Ship can use simple robots as crew"
+        fittingEffectDescription: "Ship can use simple robots as crew",
+        generalCanHaveMultiple: false
     },
         
     {
@@ -52,7 +53,8 @@ export const ShipFittings: ShipFitting[] = [
         generalMassModifier: 1,
         generalMassHullSizeMultiplier: false,
         generalHullSizes: [ShipHullSize.Fighter, ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
-        fittingEffectDescription: "Pressurized cargo space"
+        fittingEffectDescription: "Pressurized cargo space",
+        generalCanHaveMultiple: false
     },
 
     {
@@ -64,7 +66,8 @@ export const ShipFittings: ShipFitting[] = [
         generalMassModifier: 1,
         generalMassHullSizeMultiplier: true,
         generalHullSizes: [ShipHullSize.Fighter, ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
-        fittingEffectDescription: "Upgrade a spike drive to drive-2 rating"
+        fittingEffectDescription: "Upgrade a spike drive to drive-2 rating",
+        generalCanHaveMultiple: false
     }
 
 

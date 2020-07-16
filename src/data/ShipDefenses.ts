@@ -14,7 +14,8 @@ export const ShipDefenses: ShipDefense[] = [
         generalHullSizes: [ShipHullSize.Capital],
         defenseEffectDescription: "+1 AC, +20 maximum hit points",
         defenseEffectAC: 1,
-        defenseEffectHP: 20
+        defenseEffectHP: 20,
+        generalCanHaveMultiple: false
     },
 
 
@@ -29,7 +30,8 @@ export const ShipDefenses: ShipDefense[] = [
         generalHullSizes: [ShipHullSize.Fighter, ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
         defenseEffectDescription: "+2 AC, -1 Speed",
         defenseEffectAC: 2,
-        defenseEffectSpeed: -1
+        defenseEffectSpeed: -1,
+        generalCanHaveMultiple: false
     }
 
 

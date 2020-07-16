@@ -16,7 +16,8 @@ export const ShipWeapons: ShipWeapon[] = [
         weaponHardpoint: 1,
         generalHullSizes: [ShipHullSize.Fighter, ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
         weaponTechnologyLevel: 4,
-        weaponQualitiesAP: 20    
+        weaponQualitiesAP: 20,
+        generalCanHaveMultiple: true    
     },
 
 
@@ -32,7 +33,8 @@ export const ShipWeapons: ShipWeapon[] = [
         weaponHardpoint: 1,
         generalHullSizes: [ShipHullSize.Fighter, ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
         weaponTechnologyLevel: 4,
-        weaponQualitiesFlak: true    
+        weaponQualitiesFlak: true,
+        generalCanHaveMultiple: true    
     },
 
 
@@ -50,7 +52,8 @@ export const ShipWeapons: ShipWeapon[] = [
         generalHullSizes: [ShipHullSize.Frigate, ShipHullSize.Cruiser, ShipHullSize.Capital],
         weaponTechnologyLevel: 4,
         weaponQualitiesAP: 20,
-        weaponQualitiesAmmo: 4    
+        weaponQualitiesAmmo: 4,
+        generalCanHaveMultiple: true    
     },    
 
 ]
