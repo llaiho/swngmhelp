@@ -4,6 +4,7 @@ import { ShipWeapon, ShipHullSize } from "../interfaces/Ship";
 
 export const ShipWeapons: ShipWeapon[] = [
 
+    
     {
         weaponName: "Multifocal Laser",
         generalCost: 100000,
@@ -40,7 +41,7 @@ export const ShipWeapons: ShipWeapon[] = [
 
     {
         weaponName: "Torpedo Launcher",
-        generalCost: 100000,
+        generalCost: 500000,
         generalCostHullSizeMultiplier: false,
         weaponAmmoCost: 2500,
         weaponDamage: "3d8",

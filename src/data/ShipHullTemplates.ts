@@ -3,6 +3,7 @@ import { ShipHull, ShipHullSize } from "../interfaces/Ship";
 
 export const ShipHullTemplates: ShipHull[] = [
 
+     
     {
         hullName: "Strike Fighter",
         hullCost: 200000,
@@ -17,7 +18,7 @@ export const ShipHullTemplates: ShipHull[] = [
         hullHardpoints: 1,
         hullSizeClass: ShipHullSize.Fighter
     },
-
+ 
 
 
     {

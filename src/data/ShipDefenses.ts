@@ -21,7 +21,7 @@ export const ShipDefenses: ShipDefense[] = [
 
     {
         defenseName: "Augmented Plating",
-        generalCost: 25,
+        generalCost: 25000,
         generalCostHullSizeMultiplier: true,
         generalPowerModifier: 0,
         generalPowerHullSizeMultiplier: false,

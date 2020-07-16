@@ -45,9 +45,7 @@ export function randomShipGenerator(): Ship {
         }
     }
 
-    console.log(ship.shipAddedFittings);
-    console.log(ship.shipAddedDefenses);
-    console.log(ship.shipAddedWeapons);
+
 
 //    while (((ship.shipFreeMass > 0) || (ship.shipFreePower > 0)) && const i < 10 ) {
 //        figureAdditions(ship)
@@ -81,24 +79,90 @@ function figureAdditions(ship: Ship) {
 
 
 function modifyShipValuesWeapon(ship: Ship, weapon: ShipWeapon) {
-    ship.shipCost = ship.shipCost + (weapon.generalCost * getCostModifier(ship.shipSizeClass));
-    ship.shipFreePower = ship.shipFreePower - (weapon.generalPowerModifier * getPowerAndMassModifier(ship.shipSizeClass));
-    ship.shipFreeMass  = ship.shipFreeMass  - (weapon.generalMassModifier * getPowerAndMassModifier(ship.shipSizeClass));
+    if (weapon.generalCostHullSizeMultiplier) {
+        ship.shipCost = ship.shipCost + (weapon.generalCost * getCostModifier(ship.shipSizeClass));
+    } else {
+        ship.shipCost = ship.shipCost + weapon.generalCost;
+    }
+    
+    if (weapon.generalPowerHullSizeMultiplier) {
+        ship.shipFreePower = ship.shipFreePower - (weapon.generalPowerModifier * getPowerAndMassModifier(ship.shipSizeClass));
+    } else {
+        ship.shipFreePower = ship.shipFreePower - weapon.generalPowerModifier;
+    }
+
+    if (weapon.generalMassHullSizeMultiplier) {
+        ship.shipFreeMass  = ship.shipFreeMass  - (weapon.generalMassModifier * getPowerAndMassModifier(ship.shipSizeClass));
+    } else {
+        ship.shipFreeMass  = ship.shipFreeMass  - weapon.generalMassModifier;
+    }
+    
     ship.shipFreeHardpoints = ship.shipFreeHardpoints - weapon.weaponHardpoint;
     ship.shipAddedWeapons.push(weapon);
 }
 
+
 function modifyShipValuesDefense(ship: Ship, addition: ShipDefense) {
-    ship.shipCost = ship.shipCost + (addition.generalCost * getCostModifier(ship.shipSizeClass));
-    ship.shipFreePower = ship.shipFreePower - (addition.generalPowerModifier * getPowerAndMassModifier(ship.shipSizeClass));
-    ship.shipFreeMass  = ship.shipFreeMass  - (addition.generalMassModifier * getPowerAndMassModifier(ship.shipSizeClass));
+    if (addition.generalCostHullSizeMultiplier) {
+        ship.shipCost = ship.shipCost + (addition.generalCost * getCostModifier(ship.shipSizeClass));
+    } else {
+        ship.shipCost = ship.shipCost + addition.generalCost;
+    }
+    
+    if (addition.generalPowerHullSizeMultiplier) {
+        ship.shipFreePower = ship.shipFreePower - (addition.generalPowerModifier * getPowerAndMassModifier(ship.shipSizeClass));
+    } else {
+        ship.shipFreePower = ship.shipFreePower - addition.generalPowerModifier;
+    }
+
+    if (addition.generalMassHullSizeMultiplier) {
+        ship.shipFreeMass  = ship.shipFreeMass  - (addition.generalMassModifier * getPowerAndMassModifier(ship.shipSizeClass));
+    } else {
+        ship.shipFreeMass  = ship.shipFreeMass  - addition.generalMassModifier;
+    } 
+
+    if (addition.defenseEffectAC) {
+        ship.shipAC = ship.shipAC + addition.defenseEffectAC;
+    }
+    if (addition.defenseEffectSpeed) {
+        ship.shipSpeed = ship.shipSpeed + addition.defenseEffectSpeed;
+    }
+    if (addition.defenseEffectAP) {
+        ship.shipArmor = ship.shipArmor + addition.defenseEffectAP;
+    }
+    if (addition.defenseEffectHP) {
+        ship.shipMaxHP = ship.shipMaxHP + addition.defenseEffectHP;
+    }
+
+//    ship.shipCost = ship.shipCost + (addition.generalCost * getCostModifier(ship.shipSizeClass));
+//    ship.shipFreePower = ship.shipFreePower - (addition.generalPowerModifier * getPowerAndMassModifier(ship.shipSizeClass));
+//    ship.shipFreeMass  = ship.shipFreeMass  - (addition.generalMassModifier * getPowerAndMassModifier(ship.shipSizeClass));
     ship.shipAddedDefenses.push(addition);
 }
 
+
 function modifyShipValuesFitting(ship: Ship, addition: ShipFitting) {
-    ship.shipCost = ship.shipCost + (addition.generalCost * getCostModifier(ship.shipSizeClass));
-    ship.shipFreePower = ship.shipFreePower - (addition.generalPowerModifier * getPowerAndMassModifier(ship.shipSizeClass));
-    ship.shipFreeMass  = ship.shipFreeMass  - (addition.generalMassModifier * getPowerAndMassModifier(ship.shipSizeClass));
+    if (addition.generalCostHullSizeMultiplier) {
+        ship.shipCost = ship.shipCost + (addition.generalCost * getCostModifier(ship.shipSizeClass));
+    } else {
+        ship.shipCost = ship.shipCost + addition.generalCost;
+    }
+    
+    if (addition.generalPowerHullSizeMultiplier) {
+        ship.shipFreePower = ship.shipFreePower - (addition.generalPowerModifier * getPowerAndMassModifier(ship.shipSizeClass));
+    } else {
+        ship.shipFreePower = ship.shipFreePower - addition.generalPowerModifier;
+    }
+
+    if (addition.generalMassHullSizeMultiplier) {
+        ship.shipFreeMass  = ship.shipFreeMass  - (addition.generalMassModifier * getPowerAndMassModifier(ship.shipSizeClass));
+    } else {
+        ship.shipFreeMass  = ship.shipFreeMass  - addition.generalMassModifier;
+    }
+
+//    ship.shipCost = ship.shipCost + (addition.generalCost * getCostModifier(ship.shipSizeClass));
+//    ship.shipFreePower = ship.shipFreePower - (addition.generalPowerModifier * getPowerAndMassModifier(ship.shipSizeClass));
+//    ship.shipFreeMass  = ship.shipFreeMass  - (addition.generalMassModifier * getPowerAndMassModifier(ship.shipSizeClass));
     ship.shipAddedFittings.push(addition);
 }
 
@@ -198,14 +262,17 @@ function checkPower(fitting: ShipFitting | ShipWeapon | ShipDefense, hullSize: S
 
     if (fitting.generalPowerHullSizeMultiplier) {
         if ((fitting.generalPowerModifier * getPowerAndMassModifier(hullSize)) <= power) {
+            console.log("CheckPower 1 : " + getPowerAndMassModifier(hullSize))
             return true;
         }
     }
     else {
         if (fitting.generalPowerModifier <= power) {
+            console.log("CheckPower 2 : " + fitting.generalPowerModifier)
             return true;
         }
-    }          
+    }
+    console.log("CheckPower 3 : " + fitting.generalPowerHullSizeMultiplier)          
     return false;
 }
 
