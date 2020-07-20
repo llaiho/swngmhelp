@@ -6,10 +6,19 @@ import { Uuid } from "../interfaces/Sector";
 import { shipFittingsPowerAndMassModifier, shipFittingsCostModifier, ShipFittings } from "../data/ShipFittings";
 import { ShipWeapons } from "../data/ShipWeapons";
 import { ShipDefenses } from "../data/ShipDefenses";
-import { ShipHullTemplates } from "../data/ShipHullTemplates";
+import { ShipHullTemplates, name1, name2 } from "../data/ShipHullTemplates";
 import { v4 } from "uuid";
 
 
+function makeName(): string {
+    var shipName = "string";
+
+    shipName = arnd(name1).name;
+    shipName = shipName + " ";
+    shipName = shipName + arnd(name2).name;
+
+    return shipName;
+}
 
 
 export function randomShipGenerator(): Ship {
@@ -19,7 +28,7 @@ export function randomShipGenerator(): Ship {
     const ship: Ship = {
         id: v4(), 
         location: "Uuid",
-        shipName: "string",
+        shipName: makeName(),
         shipBaseHull: hull, 
         shipSizeClass: hull.hullSizeClass,
         shipCost: hull.hullCost,
@@ -59,21 +68,26 @@ export function randomShipGenerator(): Ship {
 
 function figureAdditions(ship: Ship) {
 
+    const possibleWeaponList = figureFittingWeapons(ship);
     if ((ship.shipFreePower > 0)  && (ship.shipFreeMass > 0) && (ship.shipFreeHardpoints)) { // shuttle saa aina sandthrowerin
-        if (figureFittingWeapons(ship).length > 0) {
-            const newWeapon = arnd(figureFittingWeapons(ship));
+        if (possibleWeaponList.length > 0) {
+            const newWeapon = arnd(possibleWeaponList);
             modifyShipValuesWeapon(ship, newWeapon);
         }       
     }
-    if ((ship.shipFreePower > 0)  && (ship.shipFreeMass > 0)) {
-        if (figureFittingDefences(ship).length > 0) {
-            if (roll(30)) {
-                const newDefence = arnd(figureFittingDefences(ship))
-                modifyShipValuesDefense(ship, newDefence);
-            }
+    const possibleDefenceList = figureFittingDefences(ship);
+    if ((ship.shipFreePower > 0)  && (ship.shipFreeMass > 0) && (possibleDefenceList.length > 0)) {
+        if (roll(30)) {
+            const newDefence = arnd(possibleDefenceList);
+            modifyShipValuesDefense(ship, newDefence);
         }
-        const newFitting = arnd(figureFittingFittings(ship));
+
+    const possibleFittingList = figureFittingFittings(ship);
+    if ((ship.shipFreePower > 0)  && (ship.shipFreeMass > 0) && (possibleFittingList.length > 0)) {
+        const newFitting = arnd(possibleFittingList);
         modifyShipValuesFitting(ship, newFitting);
+    }    
+
     }
 }
 
@@ -121,7 +135,7 @@ function modifyShipValuesDefense(ship: Ship, addition: ShipDefense) {
         ship.shipFreeMass  = ship.shipFreeMass  - addition.generalMassModifier;
     } 
 
-    if (addition.defenseEffectAC) {
+     if (addition.defenseEffectAC) {
         ship.shipAC = ship.shipAC + addition.defenseEffectAC;
     }
     if (addition.defenseEffectSpeed) {
@@ -132,7 +146,7 @@ function modifyShipValuesDefense(ship: Ship, addition: ShipDefense) {
     }
     if (addition.defenseEffectHP) {
         ship.shipMaxHP = ship.shipMaxHP + addition.defenseEffectHP;
-    }
+    } 
 
 //    ship.shipCost = ship.shipCost + (addition.generalCost * getCostModifier(ship.shipSizeClass));
 //    ship.shipFreePower = ship.shipFreePower - (addition.generalPowerModifier * getPowerAndMassModifier(ship.shipSizeClass));
@@ -262,17 +276,17 @@ function checkPower(fitting: ShipFitting | ShipWeapon | ShipDefense, hullSize: S
 
     if (fitting.generalPowerHullSizeMultiplier) {
         if ((fitting.generalPowerModifier * getPowerAndMassModifier(hullSize)) <= power) {
-            console.log("CheckPower 1 : " + getPowerAndMassModifier(hullSize))
+//            console.log("CheckPower 1 : " + getPowerAndMassModifier(hullSize))
             return true;
         }
     }
     else {
         if (fitting.generalPowerModifier <= power) {
-            console.log("CheckPower 2 : " + fitting.generalPowerModifier)
+//            console.log("CheckPower 2 : " + fitting.generalPowerModifier)
             return true;
         }
     }
-    console.log("CheckPower 3 : " + fitting.generalPowerHullSizeMultiplier)          
+//    console.log("CheckPower 3 : " + fitting.generalPowerHullSizeMultiplier)          
     return false;
 }
 

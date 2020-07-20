@@ -1,4 +1,4 @@
-import { ShipHull, ShipHullSize } from "../interfaces/Ship";
+import { ShipHull, ShipHullSize, Tag1 } from "../interfaces/Ship";
 
 
 export const ShipHullTemplates: ShipHull[] = [
@@ -37,3 +37,51 @@ export const ShipHullTemplates: ShipHull[] = [
     },
 
 ];
+
+
+
+export const name1 : Tag1[] = [
+    {name: "Black" }, 
+    {name: "Green"},
+    {name: "Red"},
+    {name: "Golden"},
+    {name: "White"},
+    {name: "Blue"},
+    {name: "Dripping"},
+    {name: "Wet"},
+    {name: "Drunken"},
+    {name: "Tipsy"},
+    {name: "Welcome"},
+    {name: "Scurvy"},
+    {name: "Rusty"},
+    {name: "Dizzy"},
+    {name: "Hungry"},
+    {name: "Thirsty"},
+    {name: "Sleeping"},
+    {name: "Twisted"},
+    {name: "Spinning"},
+    {name: "Dancing"} 
+]
+
+export const name2 : Tag1[] = [ 
+    {name: "Dog" }, 
+    {name: "Horse"},
+    {name: "Rat"},
+    {name: "Fish"},
+    {name: "Giant"},
+    {name: "Dragon"},
+    {name: "Vampire"},
+    {name: "Elf"},
+    {name: "Gnome"},
+    {name: "Dwarf"},
+    {name: "Orc"},
+    {name: "Halfling"},
+    {name: "Fool"},
+    {name: "Wench"},
+    {name: "Thug"},
+    {name: "Pirate"},
+    {name: "Priest"},
+    {name: "Boot"},
+    {name: "Bucket"},
+    {name: "Tankard"} 
+]

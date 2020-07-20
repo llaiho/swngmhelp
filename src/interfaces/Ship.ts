@@ -17,6 +17,15 @@ export enum ShipHullSize {
 // }
 
 
+export interface Tag1 {
+    name: string;
+}
+
+
+// export interface Tag2 {
+//    name: string;
+// }
+
 
 export interface Ship {
     id: Uuid;
@@ -39,7 +48,16 @@ export interface Ship {
     shipAddedFittings: ShipFitting[];
     shipAddedDefenses: ShipDefense[];
     shipAddedWeapons:  ShipWeapon[];
-    
+
+/*    
+    shipSpikeDriveAdjustment?: number;
+    shipCargo?: number;
+    shipSmuglerCargo?: number;
+    shipAtmospheric?: boolean;
+    shipAmphibious?: boolean;
+    shipLifeSupportDuration?: number;
+    shipFuelForSpike?: number;
+*/
 }
 
 
@@ -81,6 +99,16 @@ export interface ShipFitting extends ShipAddition {
     // generalMassHullSizeMultiplier: boolean;
     // generalHullSizes: ShipHullSize[];
     fittingEffectDescription: string;
+    
+    fittingSpikeDriveAdjustment?: number;
+    fittingCargo?: number;
+    fittingSmuglerCargo?: number;
+    fittingAtmospheric?: boolean;
+    fittingAmphibious?: boolean;
+    fittingLifeSupportAmount?: number;
+    fittingLifeSupportDuration?: number;
+    fittingFuelForSpike?: number;
+
 }
 
 
