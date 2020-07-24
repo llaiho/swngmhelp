@@ -3,7 +3,7 @@ import { ShipHullSize, Ship, ShipHull, ShipFitting, ShipDefense, ShipWeapon, Shi
 import { arnd, rnd, arnds, roll, grnd } from "../utils/randUtils";
 import { Uuid } from "../interfaces/Sector";
 
-import { shipFittingsPowerAndMassModifier, shipFittingsCostModifier, ShipFittings } from "../data/ShipFittings";
+import { shipFittingsPowerAndMassModifier, shipFittingsCostModifier, ShipFittings, ShipFittingSystemDrive } from "../data/ShipFittings";
 import { ShipWeapons } from "../data/ShipWeapons";
 import { ShipDefenses } from "../data/ShipDefenses";
 import { ShipHullTemplates, name1, name2 } from "../data/ShipHullTemplates";
@@ -46,9 +46,28 @@ export function randomShipGenerator(): Ship {
         shipAddedFittings: [],
         shipAddedDefenses: [],
         shipAddedWeapons:  [],
+        shipAmphibious: false,
+        shipAtmospheric: false,
+        shipCargo: 0,                                       // tons
+        shipSmuglerCargo: 0,                                // tons
+        shipLifeSupportDuration: (hull.hullCrewMax * 60),   // mandays
+        shipSpikeDrive: 1,
+        shipFuelForSpike: 1,
+
+    }
+    if (roll(40)) {
+        
+        ship.shipSpikeDrive = 0;
+        ship.shipFuelForSpike = 0;
+        ship.shipCost = 0.9 * hull.hullCost; 
+        modifyShipValuesFitting(ship, ShipFittingSystemDrive)
+//        ship.shipFreeMass = hull.hullMass + ( 2 * getPowerAndMassModifier(ship.shipSizeClass) );
+//        ship.shipFreePower = hull.hullPower + getPowerAndMassModifier(ship.shipSizeClass);
+        
+//        ship.shipAddedFittings.push(ShipFittings)
     }
 
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < (50 * getPowerAndMassModifier(ship.shipSizeClass)); i++) {
         if ((ship.shipFreeMass > 0) || (ship.shipFreePower > 0)) {
             figureAdditions(ship)
         }
@@ -62,28 +81,28 @@ export function randomShipGenerator(): Ship {
 
 //    figureFittingFittings(ship)
 
-//    console.log(ship);
+    console.log(ship);
     return ship;
 }
 
 function figureAdditions(ship: Ship) {
 
     const possibleWeaponList = figureFittingWeapons(ship);
-    if ((ship.shipFreePower > 0)  && (ship.shipFreeMass > 0) && (ship.shipFreeHardpoints)) { // shuttle saa aina sandthrowerin
+    if (((ship.shipFreePower > 0)  && (ship.shipFreeMass > 0)) && (ship.shipFreeHardpoints)) { // shuttle saa aina sandthrowerin
         if (possibleWeaponList.length > 0) {
             const newWeapon = arnd(possibleWeaponList);
             modifyShipValuesWeapon(ship, newWeapon);
         }       
     }
     const possibleDefenceList = figureFittingDefences(ship);
-    if ((ship.shipFreePower > 0)  && (ship.shipFreeMass > 0) && (possibleDefenceList.length > 0)) {
+    if (((ship.shipFreePower > 0)  || (ship.shipFreeMass > 0)) && (possibleDefenceList.length > 0)) {
         if (roll(30)) {
             const newDefence = arnd(possibleDefenceList);
             modifyShipValuesDefense(ship, newDefence);
         }
 
     const possibleFittingList = figureFittingFittings(ship);
-    if ((ship.shipFreePower > 0)  && (ship.shipFreeMass > 0) && (possibleFittingList.length > 0)) {
+    if (((ship.shipFreePower > 0)  || (ship.shipFreeMass > 0)) && (possibleFittingList.length > 0)) {
         const newFitting = arnd(possibleFittingList);
         modifyShipValuesFitting(ship, newFitting);
     }    
@@ -174,12 +193,64 @@ function modifyShipValuesFitting(ship: Ship, addition: ShipFitting) {
         ship.shipFreeMass  = ship.shipFreeMass  - addition.generalMassModifier;
     }
 
+
+    if (addition.fittingLifeSupportAmount) {
+        ship.shipMaxCrew = ship.shipMaxCrew + ship.shipBaseHull.hullCrewMax;
+    }
+    if (addition.fittingLifeSupportDuration) {
+        ship.shipLifeSupportDuration = ship.shipLifeSupportDuration + (ship.shipMaxCrew * 60);
+    }
+
+    if (addition.fittingCargo) {
+        if ((2 * ((getPowerAndMassModifier(ship.shipSizeClass)) - 1) * 10 ) === 0) {
+            ship.shipCargo = ship.shipCargo + 2;
+        }
+        else {
+            ship.shipCargo = ship.shipCargo + (2 * ((getPowerAndMassModifier(ship.shipSizeClass)) - 1) * 10 )
+        }
+    }
+
+    if (addition.fittingSmuglerCargo) {
+        if ((0.2 * ((getPowerAndMassModifier(ship.shipSizeClass)) - 1) * 10 ) === 0) {
+            ship.shipSmuglerCargo = ship.shipSmuglerCargo + 0.2;
+        }
+        else {
+            ship.shipSmuglerCargo = ship.shipSmuglerCargo + (0.2 * ((getPowerAndMassModifier(ship.shipSizeClass)) - 1) * 10 )
+        }
+    }
+
+    if (addition.fittingAtmospheric) {
+        ship.shipAtmospheric = true;
+    }
+    if (addition.fittingAmphibious) {
+        ship.shipAtmospheric = true;
+        ship.shipAmphibious = true;
+    }
+
+    if (addition.fittingSpikeDrive) {
+        ship.shipSpikeDrive = addition.fittingSpikeDrive;
+    }
+    if (addition.fittingFuelForSpike) {
+        ship.shipFuelForSpike = ship.shipFuelForSpike + 1;
+    }
+
+
+
 //    ship.shipCost = ship.shipCost + (addition.generalCost * getCostModifier(ship.shipSizeClass));
 //    ship.shipFreePower = ship.shipFreePower - (addition.generalPowerModifier * getPowerAndMassModifier(ship.shipSizeClass));
 //    ship.shipFreeMass  = ship.shipFreeMass  - (addition.generalMassModifier * getPowerAndMassModifier(ship.shipSizeClass));
     ship.shipAddedFittings.push(addition);
 }
-
+/*
+fittingSpikeDrive?: number;
+fittingCargo?: boolean;
+fittingSmuglerCargo?: boolean;
+fittingAtmospheric?: boolean;
+fittingAmphibious?: boolean;
+fittingLifeSupportAmount?: number;
+fittingLifeSupportDuration?: number;
+fittingFuelForSpike?: number;
+*/
 
 
 function figureFittingWeapons(ship: Ship) {
@@ -206,8 +277,42 @@ function figureFittingFittings(ship: Ship) {
     return ShipFittings.filter((fit: ShipFitting) => {
         return ((checkMass(fit, ship.shipSizeClass, ship.shipFreeMass)) 
             && (checkPower(fit, ship.shipSizeClass, ship.shipFreePower))
-            && (checkCanHaveMultipleFittings(fit, ship)))
+            && (checkCanHaveMultipleFittings(fit, ship))
+            && (checkCanHaveSpikeUpgrade(ship, fit)) 
+            && (checkCanHaveAtmosphericUpgrade(ship, fit))
+            && (checkCanHaveFuelBunkers(ship, fit)))
     })
+}
+
+function checkCanHaveFuelBunkers(ship: Ship, upgrade: ShipFitting): boolean {
+    if ((upgrade.fittingFuelForSpike === undefined) || ship.shipSpikeDrive !== 0) {
+        return true;
+    }
+    return false;
+}
+
+function checkCanHaveSpikeUpgrade(ship: Ship, upgrade: ShipFitting): boolean {
+    if (upgrade.fittingSpikeDrive === undefined) {
+        return true
+    }
+    else {
+        if (ship.shipSpikeDrive === 1) {
+          return true;
+        }
+    }
+    return false;
+}
+
+function checkCanHaveAtmosphericUpgrade(ship: Ship, upgrade: ShipFitting): boolean {
+    if (getPowerAndMassModifier(ship.shipSizeClass) > 2) {
+        return false;
+    }
+    else {
+        if (ship.shipAtmospheric === false && ship.shipAmphibious === false) {
+            return true;
+        }
+    }
+    return false;
 }
 
 

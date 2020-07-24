@@ -49,6 +49,39 @@ const useStyles = makeStyles((theme: Theme) =>
                 alignItems: "center",
                 justifyContent: "flex-end",
             },
+            "& > div.details": {
+                display: "none",
+                marginTop: theme.spacing(1),
+                "&.open": {
+                    display: "block",
+                },
+                "& h5": {
+                    marginTop: theme.spacing(1),
+                },
+            },
+            "& span.attribute-container": {
+                marginRight: theme.spacing(1),
+                fontSize: "0.7rem",
+                fontWeight: "normal",
+                "& > b": {
+                    fontSize: "1rem",
+                    fontWeight: "bold",
+                },
+                "& > small": {
+                    fontSize: "0.75rem",
+                    fontWeight: "bold",
+                    "&.positive": {
+                        color: "#88FF88",
+                    },
+                    "&.negative": {
+                        color: "#FF8888",
+                    },
+                },
+            },
+            "&.template": {
+                backgroundColor: theme.palette.grey[600],
+            },    
+            
         }
     })
 );
@@ -59,7 +92,7 @@ const ShipListView: FC = () => {
 
     
     const [ships, setShips] = useState<Ship[]>([
-        randomShipGenerator()
+//        randomShipGenerator()
     ]);
 
 //    console.log(ships);
@@ -71,14 +104,16 @@ const ShipListView: FC = () => {
         });
     }
 
-/*
-      const deleteShipFromList = () => {
+
+      const deleteShipFromList = (shipId: string) => {
         setShips((prevShips) => {
-            const newShips = [...ships].slice(this.ship)
+            const newShips = prevShips.filter((s: Ship) => {
+                return s.id !== shipId;
+            });
             return newShips;
-        })
+        });
     }  
-*/    
+    
 
 
 
@@ -94,9 +129,10 @@ const ShipListView: FC = () => {
         <Card>
             {ships.map((ship) => {
                 return (
-                    <div>
-                        <p>{ship.shipName}, {ship.shipBaseHull}</p>
-                        <Button >Delete Ship</Button>
+                    <div key={ship.id}>
+                        <p>{ship.shipName}, {ship.shipBaseHull.hullName} </p>
+                        
+                        <Button onClick={() => [deleteShipFromList(ship.id)]}>Delete Ship</Button>
                     </div>    
                 )
             })} 

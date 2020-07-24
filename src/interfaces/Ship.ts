@@ -49,15 +49,15 @@ export interface Ship {
     shipAddedDefenses: ShipDefense[];
     shipAddedWeapons:  ShipWeapon[];
 
-/*    
-    shipSpikeDriveAdjustment?: number;
-    shipCargo?: number;
-    shipSmuglerCargo?: number;
-    shipAtmospheric?: boolean;
-    shipAmphibious?: boolean;
-    shipLifeSupportDuration?: number;
-    shipFuelForSpike?: number;
-*/
+    
+    shipSpikeDrive: number;
+    shipCargo: number;
+    shipSmuglerCargo: number;
+    shipAtmospheric: boolean;
+    shipAmphibious: boolean;
+    shipLifeSupportDuration: number;
+    shipFuelForSpike: number;
+
 }
 
 
@@ -100,13 +100,13 @@ export interface ShipFitting extends ShipAddition {
     // generalHullSizes: ShipHullSize[];
     fittingEffectDescription: string;
     
-    fittingSpikeDriveAdjustment?: number;
-    fittingCargo?: number;
-    fittingSmuglerCargo?: number;
+    fittingSpikeDrive?: number;
+    fittingCargo?: boolean;
+    fittingSmuglerCargo?: boolean;
     fittingAtmospheric?: boolean;
     fittingAmphibious?: boolean;
-    fittingLifeSupportAmount?: number;
-    fittingLifeSupportDuration?: number;
+    fittingLifeSupportAmount?: boolean;
+    fittingLifeSupportDuration?: boolean;
     fittingFuelForSpike?: number;
 
 }
